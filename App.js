@@ -1,4 +1,6 @@
+import 'react-native-gesture-handler';
 import { StyleSheet, View } from 'react-native';
+
 import {
   useFonts,
   Roboto_400Regular,
