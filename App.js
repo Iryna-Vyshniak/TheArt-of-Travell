@@ -8,6 +8,7 @@ import {
   Roboto_700Bold,
 } from '@expo-google-fonts/roboto';
 import LoginScreen from './screens/LoginScreen';
+import RegistrationScreen from './screens/RegistrationScreen';
 
 export default function App() {
   let [fontsLoaded] = useFonts({
@@ -23,6 +24,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <LoginScreen />
+      {/*  <RegistrationScreen /> */}
     </View>
   );
 }
