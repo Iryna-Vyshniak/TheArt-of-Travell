@@ -42,7 +42,10 @@ export const styles = StyleSheet.create({
   },
 
   form: {
+    display: 'flex',
+    flexDirection: 'column',
     justifyContent: 'flex-start',
+    gap: 16,
     backgroundColor: 'transparent',
     paddingHorizontal: 16,
     width: '100%',
@@ -68,7 +71,6 @@ export const styles = StyleSheet.create({
 
   passwordContainer: {
     position: 'relative',
-    marginTop: 16,
     marginBottom: 43,
   },
 
