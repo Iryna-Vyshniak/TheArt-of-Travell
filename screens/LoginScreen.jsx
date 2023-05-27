@@ -11,7 +11,7 @@ import { styles } from '../styles/LoginScreen.styled';
 import Bg from '../assets/login-bg.jpg';
 import { useState } from 'react';
 
-const LoginScreen = ({ navigation }) => {
+const LoginScreen = (/* { navigation } */) => {
   const [focused, setFocused] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -91,7 +91,7 @@ const LoginScreen = ({ navigation }) => {
                 <View style={styles.wrapper}>
                   <Text style={styles.loginText}>Немає акаунту?</Text>
                   <TouchableOpacity
-                    onPress={() => navigation.navigate('RegistrationScreen')}
+                    // onPress={() => navigation.navigate('RegistrationScreen')}
                     style={styles.loginText}
                   >
                     <Text style={styles.loginLink}>Зареєструватися</Text>

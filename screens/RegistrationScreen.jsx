@@ -12,7 +12,7 @@ import Bg from '../assets/login-bg.jpg';
 import { useState } from 'react';
 import Icon from '@expo/vector-icons/Feather';
 
-const RegistrationScreen = ({ navigation }) => {
+const RegistrationScreen = (/* { navigation } */) => {
   const [focused, setFocused] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -117,7 +117,7 @@ const RegistrationScreen = ({ navigation }) => {
                 <View style={styles.wrapper}>
                   <Text style={styles.loginText}>Вже є акаунт?</Text>
                   <TouchableOpacity
-                    onPress={() => navigation.navigate('LoginScreen')}
+                    // onPress={() => navigation.navigate('LoginScreen')}
                     style={styles.loginText}
                   >
                     <Text style={styles.loginLink}>Увійти</Text>
