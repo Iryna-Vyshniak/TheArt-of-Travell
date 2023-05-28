@@ -12,7 +12,6 @@ import {
   Pressable,
   Image,
   Platform,
-  //useWindowDimensions,
 } from 'react-native';
 import { StyleSheet } from 'react-native';
 import Bg from '../assets/login-bg.jpg';
@@ -301,7 +300,6 @@ const styles = StyleSheet.create({
     gap: 16,
     backgroundColor: 'transparent',
     paddingHorizontal: 16,
-    // marginBottom: 78,
     width: '100%',
   },
 
