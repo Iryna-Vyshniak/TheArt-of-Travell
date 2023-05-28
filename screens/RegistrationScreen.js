@@ -12,24 +12,40 @@ import {
   Pressable,
   Image,
   Platform,
+  Dimensions,
 } from 'react-native';
 import { StyleSheet } from 'react-native';
 import Bg from '../assets/login-bg.jpg';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Icon from '@expo/vector-icons/Feather';
 
 const RegistrationScreen = (/* { navigation } */) => {
+  // orientation change
+  const [dimensions, setDimensions] = useState({
+    windowWidth: Dimensions.get('window').width - 8 * 2,
+    windowHeight: Dimensions.get('window').height,
+  });
+
   const [keyboardStatus, setKeyboardStatus] = useState(false);
   const [focused, setFocused] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [userAvatar, setUserAvatar] = useState('');
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-  });
+  const [formData, setFormData] = useState({ name: '', email: '', password: '' });
 
   const { name, email, password } = formData;
+
+  useEffect(() => {
+    const onChange = ({ window }) => {
+      const windowWidth = window.width - 8 * 2;
+      const windowHeight = window.height;
+      setDimensions({ windowWidth, windowHeight });
+    };
+
+    const subscription = Dimensions.addEventListener('change', onChange);
+    return () => subscription?.remove();
+  }, []);
+
+  const isPortrait = dimensions.windowWidth < dimensions.windowHeight;
 
   function togglePassword() {
     setShowPassword((prevState) => !prevState);
@@ -96,7 +112,11 @@ const RegistrationScreen = (/* { navigation } */) => {
             <View
               style={{
                 ...styles.container,
+                flex: isPortrait ? 0 : 1,
                 paddingBottom: keyboardStatus ? 0 : 78,
+                paddingTop: isPortrait ? 0 : 30,
+                // height: dimensions.windowHeight * (isPortrait ? 0.61 : 1),
+                // maxHeight: isPortrait ? dimensions.windowHeight * 0.61 : '100%',
               }}
             >
               <View style={styles.box}>
@@ -123,8 +143,18 @@ const RegistrationScreen = (/* { navigation } */) => {
                   )}
                 </Pressable>
               </View>
-              <Text style={styles.title}>Реєстрація</Text>
-              <View style={styles.form}>
+              <Text
+                style={{
+                  ...styles.title,
+                  marginBottom: isPortrait ? 33 : 8,
+                  marginTop: isPortrait ? -32 : -52,
+                }}
+              >
+                Реєстрація
+              </Text>
+              <View
+                style={{ ...styles.form, width: dimensions.windowWidth, gap: isPortrait ? 16 : 8 }}
+              >
                 <TextInput
                   id='name'
                   value={name}
@@ -170,7 +200,7 @@ const RegistrationScreen = (/* { navigation } */) => {
                     borderColor: focused === 'email' ? '#FF6C00' : '#E8E8E8',
                   }}
                 />
-                <View style={styles.passwordContainer}>
+                <View style={{ ...styles.passwordContainer, marginBottom: isPortrait ? 43 : 8 }}>
                   <TextInput
                     type={showPassword ? 'text' : 'password'}
                     id='password'
@@ -249,6 +279,7 @@ const styles = StyleSheet.create({
   },
 
   container: {
+    alignItems: 'center',
     paddingBottom: 78,
     width: '100%',
     borderTopLeftRadius: 25,
@@ -283,7 +314,7 @@ const styles = StyleSheet.create({
 
   title: {
     marginTop: -32,
-    marginBottom: 33,
+    //marginBottom: 33,
 
     color: '#212121',
 
@@ -299,7 +330,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     gap: 16,
     backgroundColor: 'transparent',
-    paddingHorizontal: 16,
+    //paddingHorizontal: 16,
     width: '100%',
   },
 
@@ -323,7 +354,7 @@ const styles = StyleSheet.create({
 
   passwordContainer: {
     position: 'relative',
-    marginBottom: 43,
+    //marginBottom: 43,
   },
 
   passwordIndicator: {
