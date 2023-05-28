@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   SafeAreaView,
   ImageBackground,
@@ -11,11 +11,18 @@ import {
   Keyboard,
   Alert,
   Platform,
+  Dimensions,
 } from 'react-native';
 import { StyleSheet } from 'react-native';
 import Bg from '../assets/login-bg.jpg';
 
 const LoginScreen = (/* { navigation } */) => {
+  // orientation change
+  const [dimensions, setDimensions] = useState({
+    windowWidth: Dimensions.get('window').width - 8 * 2,
+    windowHeight: Dimensions.get('window').height,
+  });
+
   const [keyboardStatus, setKeyboardStatus] = useState(false);
   const [focused, setFocused] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -25,6 +32,19 @@ const LoginScreen = (/* { navigation } */) => {
   });
 
   const { email, password } = formData;
+
+  useEffect(() => {
+    const onChange = ({ window }) => {
+      const windowWidth = window.width - 8 * 2;
+      const windowHeight = window.height;
+      setDimensions({ windowWidth, windowHeight });
+    };
+
+    const subscription = Dimensions.addEventListener('change', onChange);
+    return () => subscription?.remove();
+  }, []);
+
+  const isPortrait = dimensions.windowWidth < dimensions.windowHeight;
 
   function togglePassword() {
     setShowPassword((prevState) => !prevState);
@@ -76,6 +96,7 @@ const LoginScreen = (/* { navigation } */) => {
             <View
               style={{
                 ...styles.container,
+                flex: isPortrait ? 0 : 1,
                 paddingBottom: keyboardStatus ? 0 : 111,
               }}
             >
@@ -209,9 +230,9 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'flex-start',
     gap: 16,
-    backgroundColor: 'transparent',
     paddingHorizontal: 16,
     width: '100%',
+    backgroundColor: 'transparent',
   },
 
   input: {
