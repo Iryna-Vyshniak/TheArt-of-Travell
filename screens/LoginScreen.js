@@ -10,6 +10,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   Alert,
+  Platform,
 } from 'react-native';
 import { StyleSheet } from 'react-native';
 import Bg from '../assets/login-bg.jpg';
@@ -50,20 +51,34 @@ const LoginScreen = (/* { navigation } */) => {
     }
     Alert.alert('Credentials', `email: ${formData.email}, password: ${formData.password}`);
   };
+
+  const keyboardHide = () => {
+    setKeyboardStatus(false);
+    Keyboard.dismiss();
+  };
+
   const handleSubmit = () => {
     checkTextInput();
+    keyboardHide();
+    setShowPassword(false);
     console.log(formData);
+    setFormData({ email: '', password: '' });
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.keyboard}
-    >
-      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss}>
-        <SafeAreaView style={styles.mainContainer}>
-          <ImageBackground source={Bg} resizeMode='cover' style={styles.image}>
-            <View style={styles.container}>
+    <TouchableWithoutFeedback onPress={keyboardHide}>
+      <SafeAreaView style={styles.mainContainer}>
+        <ImageBackground source={Bg} resizeMode='cover' style={styles.image}>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={styles.keyboard}
+          >
+            <View
+              style={{
+                ...styles.container,
+                paddingBottom: keyboardStatus ? 0 : 111,
+              }}
+            >
               <Text style={styles.title}>Увійти</Text>
               <View style={styles.form}>
                 <TextInput
@@ -74,7 +89,6 @@ const LoginScreen = (/* { navigation } */) => {
                   }
                   placeholder='Адреса електронної пошти'
                   placeholderTextColor='#BDBDBD'
-                  autoFocus
                   keyboardType='email-address'
                   autoCompleteType='email-address'
                   autoCapitalize='none'
@@ -101,7 +115,7 @@ const LoginScreen = (/* { navigation } */) => {
                     }
                     placeholder='Пароль'
                     placeholderTextColor='#BDBDBD'
-                    secureTextEntry={showPassword}
+                    secureTextEntry={!showPassword}
                     autoCompleteType='password'
                     autoCapitalize='none'
                     selectionColor={'#FF6C00'}
@@ -117,8 +131,12 @@ const LoginScreen = (/* { navigation } */) => {
                       borderColor: focused === 'password' ? '#FF6C00' : '#E8E8E8',
                     }}
                   />
-                  <TouchableOpacity onPress={togglePassword} style={styles.passwordIndicator}>
-                    <Text style={styles.showText}>{showPassword ? 'Показати' : 'Сховати'}</Text>
+                  <TouchableOpacity
+                    onPress={togglePassword}
+                    activeOpacity={0.7}
+                    style={styles.passwordIndicator}
+                  >
+                    <Text style={styles.showText}>{showPassword ? 'Сховати' : 'Показати'}</Text>
                   </TouchableOpacity>
                 </View>
                 <TouchableOpacity onPress={handleSubmit} style={styles.btn}>
@@ -128,6 +146,7 @@ const LoginScreen = (/* { navigation } */) => {
                   <Text style={styles.loginText}>Немає акаунту?</Text>
                   <TouchableOpacity
                     // onPress={() => navigation.navigate('RegistrationScreen')}
+                    activeOpacity={0.7}
                     style={styles.loginText}
                   >
                     <Text style={styles.loginLink}>Зареєструватися</Text>
@@ -135,10 +154,10 @@ const LoginScreen = (/* { navigation } */) => {
                 </View>
               </View>
             </View>
-          </ImageBackground>
-        </SafeAreaView>
-      </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
+          </KeyboardAvoidingView>
+        </ImageBackground>
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -166,7 +185,7 @@ const styles = StyleSheet.create({
   },
 
   container: {
-    height: '61%',
+    paddingBottom: 111,
     width: '100%',
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,

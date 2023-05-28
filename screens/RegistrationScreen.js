@@ -11,6 +11,8 @@ import {
   Alert,
   Pressable,
   Image,
+  Platform,
+  //useWindowDimensions,
 } from 'react-native';
 import { StyleSheet } from 'react-native';
 import Bg from '../assets/login-bg.jpg';
@@ -71,20 +73,33 @@ const RegistrationScreen = (/* { navigation } */) => {
     setUserAvatar(null);
   };
 
+  const keyboardHide = () => {
+    setKeyboardStatus(false);
+    Keyboard.dismiss();
+  };
+
   const handleSubmit = () => {
     checkTextInput();
+    keyboardHide();
+    setShowPassword(false);
     console.log(formData);
+    setFormData({ name: '', email: '', password: '' });
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.keyboard}
-    >
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <SafeAreaView style={styles.mainContainer}>
-          <ImageBackground source={Bg} resizeMode='cover' style={styles.image}>
-            <View style={styles.container}>
+    <TouchableWithoutFeedback onPress={keyboardHide}>
+      <SafeAreaView style={styles.mainContainer}>
+        <ImageBackground source={Bg} resizeMode='cover' style={styles.image}>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={styles.keyboard}
+          >
+            <View
+              style={{
+                ...styles.container,
+                paddingBottom: keyboardStatus ? 0 : 78,
+              }}
+            >
               <View style={styles.box}>
                 {userAvatar ? (
                   <Image source={require('../assets/avatar.png')} resizeMode='cover' />
@@ -119,7 +134,6 @@ const RegistrationScreen = (/* { navigation } */) => {
                   }
                   placeholder='Логін'
                   placeholderTextColor='#BDBDBD'
-                  autoFocus
                   autoCapitalize='none'
                   selectionColor={'#FF6C00'}
                   onFocus={() => {
@@ -167,10 +181,11 @@ const RegistrationScreen = (/* { navigation } */) => {
                     }
                     placeholder='Пароль'
                     placeholderTextColor='#BDBDBD'
-                    secureTextEntry={showPassword}
+                    secureTextEntry={!showPassword}
                     autoCapitalize='none'
                     selectionColor={'#FF6C00'}
                     onFocus={() => {
+                      setKeyboardStatus(true);
                       setFocused('password');
                     }}
                     onBlur={() => {
@@ -181,17 +196,22 @@ const RegistrationScreen = (/* { navigation } */) => {
                       borderColor: focused === 'password' ? '#FF6C00' : '#E8E8E8',
                     }}
                   />
-                  <TouchableOpacity onPress={togglePassword} style={styles.passwordIndicator}>
-                    <Text style={styles.showText}>{showPassword ? 'Показати' : 'Сховати'}</Text>
+                  <TouchableOpacity
+                    onPress={togglePassword}
+                    activeOpacity={0.7}
+                    style={styles.passwordIndicator}
+                  >
+                    <Text style={styles.showText}>{showPassword ? 'Сховати' : 'Показати'}</Text>
                   </TouchableOpacity>
                 </View>
-                <TouchableOpacity onPress={handleSubmit} style={styles.btn}>
+                <TouchableOpacity onPress={handleSubmit} activeOpacity={0.7} style={styles.btn}>
                   <Text style={styles.BtnText}>Увійти</Text>
                 </TouchableOpacity>
                 <View style={styles.wrapper}>
                   <Text style={styles.loginText}>Вже є акаунт?</Text>
                   <TouchableOpacity
                     // onPress={() => navigation.navigate('LoginScreen')}
+                    activeOpacity={0.7}
                     style={styles.loginText}
                   >
                     <Text style={styles.loginLink}>Увійти</Text>
@@ -199,10 +219,10 @@ const RegistrationScreen = (/* { navigation } */) => {
                 </View>
               </View>
             </View>
-          </ImageBackground>
-        </SafeAreaView>
-      </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
+          </KeyboardAvoidingView>
+        </ImageBackground>
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -230,7 +250,7 @@ const styles = StyleSheet.create({
   },
 
   container: {
-    height: '68%',
+    paddingBottom: 78,
     width: '100%',
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
@@ -281,6 +301,7 @@ const styles = StyleSheet.create({
     gap: 16,
     backgroundColor: 'transparent',
     paddingHorizontal: 16,
+    // marginBottom: 78,
     width: '100%',
   },
 
