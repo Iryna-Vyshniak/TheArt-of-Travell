@@ -1,4 +1,4 @@
-//import 'react-native-gesture-handler';
+import 'react-native-gesture-handler';
 import { StyleSheet, View } from 'react-native';
 
 import {
@@ -7,8 +7,7 @@ import {
   Roboto_500Medium,
   Roboto_700Bold,
 } from '@expo-google-fonts/roboto';
-import LoginScreen from './screens/LoginScreen';
-import RegistrationScreen from './screens/RegistrationScreen';
+import Navigation from './screens/Navigation';
 
 export default function App() {
   let [fontsLoaded] = useFonts({
@@ -22,10 +21,9 @@ export default function App() {
   }
 
   return (
-    <View style={styles.container}>
-      {/* <LoginScreen /> */}
-      <RegistrationScreen />
-    </View>
+    // <View style={styles.container}>
+    <Navigation />
+    // </View>
   );
 }
 
