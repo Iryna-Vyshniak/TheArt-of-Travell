@@ -100,6 +100,7 @@ const RegistrationScreen = ({ navigation }) => {
     setShowPassword(false);
     console.log(formData);
     setFormData({ name: '', email: '', password: '' });
+    navigation.navigate('Home');
   };
 
   return (

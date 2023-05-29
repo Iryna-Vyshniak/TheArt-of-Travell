@@ -70,6 +70,7 @@ const LoginScreen = ({ navigation }) => {
       return;
     }
     Alert.alert('Credentials', `email: ${formData.email}, password: ${formData.password}`);
+    // return navigation.navigate('Home');
   };
 
   const keyboardHide = () => {
@@ -160,7 +161,13 @@ const LoginScreen = ({ navigation }) => {
                     <Text style={styles.showText}>{showPassword ? 'Сховати' : 'Показати'}</Text>
                   </TouchableOpacity>
                 </View>
-                <TouchableOpacity onPress={handleSubmit} style={styles.btn}>
+                <TouchableOpacity
+                  onPress={() => {
+                    handleSubmit();
+                    navigation.navigate('Home');
+                  }}
+                  style={styles.btn}
+                >
                   <Text style={styles.BtnText}>Увійти</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
