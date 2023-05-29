@@ -13,6 +13,7 @@ import PostsScreen from './screens/mainScreen/PostsScreen';
 import CreatePostsScreen from './screens/mainScreen/CreatePostsScreen';
 import ProfileScreen from './screens/mainScreen/ProfileScreen';
 import HomeScreen from './screens/nestedScreens/HomeScreen';
+import BtnLogOut from './components/BtnLogOut';
 //import CommentsScreen from './screens/nestedScreens/CommentsScreen';
 
 const AuthStack = createStackNavigator();
@@ -21,7 +22,7 @@ const MainTab = createBottomTabNavigator();
 const useRoute = (isAuth) => {
   if (!isAuth) {
     return (
-      <AuthStack.Navigator>
+      <AuthStack.Navigator initialRouteName='Login' options={{ headerShown: false }}>
         <AuthStack.Screen
           name='Register'
           component={RegistrationScreen}
@@ -93,7 +94,11 @@ const useRoute = (isAuth) => {
           title: 'Публікації',
           iconName: 'grid',
           headerRight: () => (
-            <Pressable onPress={() => Alert.alert('', 'This is a log out button')}>
+            // <BtnLogOut/>
+            <Pressable
+              style={styles.logoutBtn}
+              onPress={() => Alert.alert('', 'This is a log out button')}
+            >
               <Feather name='log-out' size={24} color='#BDBDBD' />
             </Pressable>
           ),

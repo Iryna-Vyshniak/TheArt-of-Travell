@@ -4,6 +4,7 @@ import Bg from '../../assets/login-bg.jpg';
 import Icon from '@expo/vector-icons/Feather';
 
 import { useState } from 'react';
+import BtnLogOut from '../../components/BtnLogOut';
 
 const ProfileScreen = ({ navigation }) => {
   const [userAvatar, setUserAvatar] = useState(null);
@@ -44,7 +45,7 @@ const ProfileScreen = ({ navigation }) => {
               )}
             </Pressable>
           </View>
-
+          {/* <BtnLogOut /> */}
           <Pressable
             style={styles.logoutBtn}
             onPress={() => Alert.alert('', 'This is a log out button')}
