@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import {
   SafeAreaView,
   ImageBackground,
@@ -10,13 +9,18 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   Alert,
+  Pressable,
+  Image,
   Platform,
   Dimensions,
 } from 'react-native';
 import { StyleSheet } from 'react-native';
-import Bg from '../assets/login-bg.jpg';
+import Bg from '../../assets/login-bg.jpg';
+import { useState, useEffect } from 'react';
+import Icon from '@expo/vector-icons/Feather';
 
-const LoginScreen = (/* { navigation } */) => {
+const RegistrationScreen = ({ navigation }) => {
+  console.log(navigation);
   // orientation change
   const [dimensions, setDimensions] = useState({
     windowWidth: Dimensions.get('window').width - 8 * 2,
@@ -26,12 +30,10 @@ const LoginScreen = (/* { navigation } */) => {
   const [keyboardStatus, setKeyboardStatus] = useState(false);
   const [focused, setFocused] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-  });
+  const [userAvatar, setUserAvatar] = useState('');
+  const [formData, setFormData] = useState({ name: '', email: '', password: '' });
 
-  const { email, password } = formData;
+  const { name, email, password } = formData;
 
   useEffect(() => {
     const onChange = ({ window }) => {
@@ -57,6 +59,10 @@ const LoginScreen = (/* { navigation } */) => {
   };
 
   const checkTextInput = () => {
+    if (!name.trim()) {
+      Alert.alert('Warning', 'Login is required. Please write your login');
+      return;
+    }
     if (!email.trim()) {
       Alert.alert('Warning', 'Email is required. Please write your email');
       return;
@@ -69,7 +75,18 @@ const LoginScreen = (/* { navigation } */) => {
       Alert.alert('Warning', 'Password is required. Please write password');
       return;
     }
-    Alert.alert('Credentials', `email: ${formData.email}, password: ${formData.password}`);
+    Alert.alert(
+      'Credentials',
+      `name: ${formData.name}, email: ${formData.email}, password: ${formData.password}`
+    );
+  };
+
+  const handleAddAvatar = () => {
+    setUserAvatar(require('../../assets/avatar.png'));
+  };
+
+  const handleRemoveAvatar = () => {
+    setUserAvatar(null);
   };
 
   const keyboardHide = () => {
@@ -82,7 +99,7 @@ const LoginScreen = (/* { navigation } */) => {
     keyboardHide();
     setShowPassword(false);
     console.log(formData);
-    setFormData({ email: '', password: '' });
+    setFormData({ name: '', email: '', password: '' });
   };
 
   return (
@@ -97,21 +114,79 @@ const LoginScreen = (/* { navigation } */) => {
               style={{
                 ...styles.container,
                 flex: isPortrait ? 0 : 1,
-                paddingBottom: keyboardStatus ? 0 : 111,
+                paddingBottom: keyboardStatus ? 0 : 78,
+                paddingTop: isPortrait ? 0 : 30,
+                // height: dimensions.windowHeight * (isPortrait ? 0.61 : 1),
+                // maxHeight: isPortrait ? dimensions.windowHeight * 0.61 : '100%',
               }}
             >
-              <Text style={styles.title}>Увійти</Text>
-              <View style={styles.form}>
+              <View style={styles.box}>
+                {userAvatar ? (
+                  <Image source={require('../../assets/avatar.png')} resizeMode='cover' />
+                ) : null}
+                <Pressable
+                  onPress={userAvatar ? handleRemoveAvatar : handleAddAvatar}
+                  accessibilityLabel={userAvatar ? 'Remove Avatar' : 'Add Avatar'}
+                  style={{
+                    ...styles.btnAdd,
+                    borderColor: userAvatar ? '#E8E8E8' : '#FF6C00',
+                  }}
+                >
+                  {userAvatar ? (
+                    <Icon
+                      name='plus'
+                      size={20}
+                      color='#E8E8E8'
+                      style={{ transform: [{ rotate: '-45deg' }] }}
+                    />
+                  ) : (
+                    <Icon name='plus' size={20} color='#FF6C00' />
+                  )}
+                </Pressable>
+              </View>
+              <Text
+                style={{
+                  ...styles.title,
+                  marginBottom: isPortrait ? 33 : 8,
+                  marginTop: isPortrait ? -32 : -52,
+                }}
+              >
+                Реєстрація
+              </Text>
+              <View
+                style={{ ...styles.form, width: dimensions.windowWidth, gap: isPortrait ? 16 : 8 }}
+              >
+                <TextInput
+                  id='name'
+                  value={name}
+                  onChangeText={(value) =>
+                    setFormData((prevState) => ({ ...prevState, name: value.trim() }))
+                  }
+                  placeholder='Логін'
+                  placeholderTextColor='#BDBDBD'
+                  autoCapitalize='none'
+                  selectionColor={'#FF6C00'}
+                  onFocus={() => {
+                    setKeyboardStatus(true);
+                    setFocused('name');
+                  }}
+                  onBlur={() => {
+                    setFocused('');
+                  }}
+                  style={{
+                    ...styles.input,
+                    borderColor: focused === 'name' ? '#FF6C00' : '#E8E8E8',
+                  }}
+                />
                 <TextInput
                   id='email'
                   value={email}
                   onChangeText={(value) =>
-                    setFormData((prevState) => ({ ...prevState, email: value }))
+                    setFormData((prevState) => ({ ...prevState, email: value.trim() }))
                   }
                   placeholder='Адреса електронної пошти'
                   placeholderTextColor='#BDBDBD'
                   keyboardType='email-address'
-                  autoCompleteType='email-address'
                   autoCapitalize='none'
                   selectionColor={'#FF6C00'}
                   onFocus={() => {
@@ -126,18 +201,17 @@ const LoginScreen = (/* { navigation } */) => {
                     borderColor: focused === 'email' ? '#FF6C00' : '#E8E8E8',
                   }}
                 />
-                <View style={styles.passwordContainer}>
+                <View style={{ ...styles.passwordContainer, marginBottom: isPortrait ? 43 : 8 }}>
                   <TextInput
                     type={showPassword ? 'text' : 'password'}
                     id='password'
                     value={password}
                     onChangeText={(value) =>
-                      setFormData((prevState) => ({ ...prevState, password: value }))
+                      setFormData((prevState) => ({ ...prevState, password: value.trim() }))
                     }
                     placeholder='Пароль'
                     placeholderTextColor='#BDBDBD'
                     secureTextEntry={!showPassword}
-                    autoCompleteType='password'
                     autoCapitalize='none'
                     selectionColor={'#FF6C00'}
                     onFocus={() => {
@@ -160,17 +234,18 @@ const LoginScreen = (/* { navigation } */) => {
                     <Text style={styles.showText}>{showPassword ? 'Сховати' : 'Показати'}</Text>
                   </TouchableOpacity>
                 </View>
-                <TouchableOpacity onPress={handleSubmit} style={styles.btn}>
+                <TouchableOpacity onPress={handleSubmit} activeOpacity={0.7} style={styles.btn}>
                   <Text style={styles.BtnText}>Увійти</Text>
                 </TouchableOpacity>
                 <View style={styles.wrapper}>
-                  <Text style={styles.loginText}>Немає акаунту?</Text>
+                  <Text style={styles.loginText}>Вже є акаунт?</Text>
                   <TouchableOpacity
-                    // onPress={() => navigation.navigate('RegistrationScreen')}
+                    title='Go to login'
+                    onPress={() => navigation.navigate('Login')}
                     activeOpacity={0.7}
                     style={styles.loginText}
                   >
-                    <Text style={styles.loginLink}>Зареєструватися</Text>
+                    <Text style={styles.loginLink}>Увійти</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -182,7 +257,7 @@ const LoginScreen = (/* { navigation } */) => {
   );
 };
 
-export default LoginScreen;
+export default RegistrationScreen;
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -206,16 +281,42 @@ const styles = StyleSheet.create({
   },
 
   container: {
-    paddingBottom: 111,
+    alignItems: 'center',
+    paddingBottom: 78,
     width: '100%',
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
     backgroundColor: '#fff',
   },
 
+  box: {
+    position: 'relative',
+    top: -60,
+    alignSelf: 'center',
+    width: 120,
+    height: 120,
+    backgroundColor: '#F6F6F6',
+    borderRadius: 16,
+  },
+
+  btnAdd: {
+    position: 'absolute',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    bottom: 12,
+    right: -12.5,
+    width: 25,
+    height: 25,
+    borderRadius: 50,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderStyle: 'solid',
+  },
+
   title: {
-    marginTop: 32,
-    marginBottom: 33,
+    marginTop: -32,
+    //marginBottom: 33,
 
     color: '#212121',
 
@@ -230,9 +331,9 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'flex-start',
     gap: 16,
-    paddingHorizontal: 16,
-    width: '100%',
     backgroundColor: 'transparent',
+    //paddingHorizontal: 16,
+    width: '100%',
   },
 
   input: {
@@ -255,7 +356,7 @@ const styles = StyleSheet.create({
 
   passwordContainer: {
     position: 'relative',
-    marginBottom: 43,
+    //marginBottom: 43,
   },
 
   passwordIndicator: {
