@@ -1,10 +1,10 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import { StyleSheet, Pressable } from 'react-native';
+import { StyleSheet, Pressable, View, Alert } from 'react-native';
 import { HeaderBackButton } from '@react-navigation/elements';
+
 // icons import
 import { Feather } from '@expo/vector-icons';
-import Icon from '@expo/vector-icons/Feather';
 import { AntDesign } from '@expo/vector-icons';
 
 import LoginScreen from './screens/auth/LoginScreen';
@@ -12,6 +12,7 @@ import RegistrationScreen from './screens/auth/RegistrationScreen';
 import PostsScreen from './screens/mainScreen/PostsScreen';
 import CreatePostsScreen from './screens/mainScreen/CreatePostsScreen';
 import ProfileScreen from './screens/mainScreen/ProfileScreen';
+//import CommentsScreen from './screens/nestedScreens/CommentsScreen';
 
 const AuthStack = createStackNavigator();
 const MainTab = createBottomTabNavigator();
@@ -82,8 +83,9 @@ const useRoute = (isAuth) => {
         component={PostsScreen}
         options={{
           title: 'Публікації',
+          iconName: 'grid',
           headerRight: () => (
-            <Pressable>
+            <Pressable onPress={() => Alert.alert('', 'This is a log out button')}>
               <Feather name='log-out' size={24} color='#BDBDBD' />
             </Pressable>
           ),
@@ -94,8 +96,10 @@ const useRoute = (isAuth) => {
         component={CreatePostsScreen}
         options={{
           title: 'Створити публікацію',
+          iconName: 'plus',
           headerLeft: () => (
             <HeaderBackButton
+              onPress={() => Alert.alert('', 'This is a back button')}
               backImage={() => (
                 <Feather name='arrow-left' size={24} color='rgba(33, 33, 33, 0.8)' />
               )}
@@ -106,7 +110,40 @@ const useRoute = (isAuth) => {
           },
         }}
       />
-      <MainTab.Screen name='Profile' component={ProfileScreen} options={{ headerShown: false }} />
+      <MainTab.Screen
+        name='Profile'
+        component={ProfileScreen}
+        options={{ iconName: 'user', headerShown: false }}
+      />
+
+      {/* <MainTab.Screen
+        name='Comments'
+        component={CommentsScreen}
+        options={{
+          title: 'Коментарі',
+          headerLeft: () => (
+            <HeaderBackButton
+              backImage={() => (
+                <Feather name='arrow-left' size={24} color='rgba(33, 33, 33, 0.8)' />
+              )}
+            />
+          ),
+        }}
+      />
+      <MainTab.Screen
+        name='Map'
+        component={CommentsScreen}
+        options={{
+          title: 'Мапи',
+          headerLeft: () => (
+            <HeaderBackButton
+              backImage={() => (
+                <Feather name='arrow-left' size={24} color='rgba(33, 33, 33, 0.8)' />
+              )}
+            />
+          ),
+        }}
+      /> */}
     </MainTab.Navigator>
   );
 };
@@ -128,7 +165,4 @@ const styles = StyleSheet.create({
   },
 });
 
-// <Feather name="trash-2" size={24} color="#BDBDBD" />
-// <Feather name="map-pin" size={24} color="#BDBDBD" />
-// <Feather name="camera" size={24} color="#FFFFFF" />
 // <Feather name="arrow-up" size={24} color="#FFFFFF" />
