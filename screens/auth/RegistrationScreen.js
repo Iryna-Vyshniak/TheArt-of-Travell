@@ -20,7 +20,7 @@ import { useState, useEffect } from 'react';
 import Icon from '@expo/vector-icons/Feather';
 
 const RegistrationScreen = ({ navigation }) => {
-  console.log(navigation);
+  //console.log(navigation);
   // orientation change
   const [dimensions, setDimensions] = useState({
     windowWidth: Dimensions.get('window').width - 8 * 2,
@@ -237,17 +237,16 @@ const RegistrationScreen = ({ navigation }) => {
                 <TouchableOpacity onPress={handleSubmit} activeOpacity={0.7} style={styles.btn}>
                   <Text style={styles.BtnText}>Увійти</Text>
                 </TouchableOpacity>
-                <View style={styles.wrapper}>
-                  <Text style={styles.loginText}>Вже є акаунт?</Text>
-                  <TouchableOpacity
-                    title='Go to login'
-                    onPress={() => navigation.navigate('Login')}
-                    activeOpacity={0.7}
-                    style={styles.loginText}
-                  >
-                    <Text style={styles.loginLink}>Увійти</Text>
-                  </TouchableOpacity>
-                </View>
+                <TouchableOpacity
+                  // title='Go to login'
+                  onPress={() => navigation.navigate('Login')}
+                  activeOpacity={0.7}
+                  style={styles.wrapper}
+                >
+                  <Text style={styles.loginText}>
+                    Вже є акаунт? <Text style={styles.loginLink}>Увійти</Text>
+                  </Text>
+                </TouchableOpacity>
               </View>
             </View>
           </KeyboardAvoidingView>

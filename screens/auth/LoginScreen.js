@@ -163,17 +163,16 @@ const LoginScreen = ({ navigation }) => {
                 <TouchableOpacity onPress={handleSubmit} style={styles.btn}>
                   <Text style={styles.BtnText}>Увійти</Text>
                 </TouchableOpacity>
-                <View style={styles.wrapper}>
-                  <Text style={styles.loginText}>Немає акаунту?</Text>
-                  <TouchableOpacity
-                    title='Go to register'
-                    onPress={() => navigation.navigate('Register')}
-                    activeOpacity={0.7}
-                    style={styles.loginText}
-                  >
-                    <Text style={styles.loginLink}>Зареєструватися</Text>
-                  </TouchableOpacity>
-                </View>
+                <TouchableOpacity
+                  // title='Go to register'
+                  onPress={() => navigation.navigate('Register')}
+                  activeOpacity={0.7}
+                  style={styles.wrapper}
+                >
+                  <Text style={styles.loginText}>
+                    Немає акаунту? <Text style={styles.loginLink}>Зареєструватися</Text>
+                  </Text>
+                </TouchableOpacity>
               </View>
             </View>
           </KeyboardAvoidingView>
