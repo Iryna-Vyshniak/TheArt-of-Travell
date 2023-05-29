@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 
-const CreatePostsScreen = ({ navigation, route }) => {
+const CreatePostsScreen = ({ navigation }) => {
   const [keyboardStatus, setKeyboardStatus] = useState(false);
   const [focused, setFocused] = useState('');
   const [disabled, setDisabled] = useState(true);
