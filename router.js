@@ -12,6 +12,7 @@ import RegistrationScreen from './screens/auth/RegistrationScreen';
 import PostsScreen from './screens/mainScreen/PostsScreen';
 import CreatePostsScreen from './screens/mainScreen/CreatePostsScreen';
 import ProfileScreen from './screens/mainScreen/ProfileScreen';
+import HomeScreen from './screens/nestedScreens/HomeScreen';
 //import CommentsScreen from './screens/nestedScreens/CommentsScreen';
 
 const AuthStack = createStackNavigator();
@@ -32,7 +33,10 @@ const useRoute = (isAuth) => {
   }
   return (
     <MainTab.Navigator
-      initialRouteName='Posts'
+      // initialRouteName='Posts'
+      initialRouteName='Home'
+      name='Home'
+      component={HomeScreen}
       blurRadius={13.5914}
       screenOptions={({ route }) => ({
         //   header
@@ -64,6 +68,7 @@ const useRoute = (isAuth) => {
         tabBarIcon: ({ focused, color }) => {
           let iconName;
 
+          // if (route.name === 'Home') {
           if (route.name === 'Posts') {
             iconName = 'grid';
           } else if (route.name === 'CreatePosts') {
@@ -81,6 +86,8 @@ const useRoute = (isAuth) => {
       <MainTab.Screen
         name='Posts'
         component={PostsScreen}
+        // name='Home'
+        // component={HomeScreen}
         options={{
           title: 'Публікації',
           iconName: 'grid',

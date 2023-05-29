@@ -164,7 +164,7 @@ const LoginScreen = ({ navigation }) => {
                 <TouchableOpacity
                   onPress={() => {
                     handleSubmit();
-                    navigation.navigate('Home');
+                    navigation.navigate('Home', { screen: 'Posts' });
                   }}
                   style={styles.btn}
                 >

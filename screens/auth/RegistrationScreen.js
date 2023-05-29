@@ -100,7 +100,6 @@ const RegistrationScreen = ({ navigation }) => {
     setShowPassword(false);
     console.log(formData);
     setFormData({ name: '', email: '', password: '' });
-    navigation.navigate('Home');
   };
 
   return (
@@ -235,7 +234,14 @@ const RegistrationScreen = ({ navigation }) => {
                     <Text style={styles.showText}>{showPassword ? 'Сховати' : 'Показати'}</Text>
                   </TouchableOpacity>
                 </View>
-                <TouchableOpacity onPress={handleSubmit} activeOpacity={0.7} style={styles.btn}>
+                <TouchableOpacity
+                  onPress={() => {
+                    handleSubmit();
+                    navigation.navigate('Home', { screen: 'Posts' });
+                  }}
+                  activeOpacity={0.7}
+                  style={styles.btn}
+                >
                   <Text style={styles.BtnText}>Увійти</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
