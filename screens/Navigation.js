@@ -1,24 +1,12 @@
-import 'react-native-gesture-handler';
+// import 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import LoginScreen from '../screens/auth/LoginScreen';
-import RegistrationScreen from '../screens/auth/RegistrationScreen';
+import useRoute from '../router';
 
-const AuthStack = createStackNavigator();
+import { AntDesign, Ionicons } from '@expo/vector-icons';
 
 const Navigation = () => {
-  return (
-    <NavigationContainer>
-      <AuthStack.Navigator>
-        <AuthStack.Screen
-          name='Register'
-          component={RegistrationScreen}
-          options={{ headerShown: false }}
-        />
-        <AuthStack.Screen name='Login' component={LoginScreen} options={{ headerShown: false }} />
-      </AuthStack.Navigator>
-    </NavigationContainer>
-  );
+  const routing = useRoute({});
+  return <NavigationContainer>{routing}</NavigationContainer>;
 };
 
 export default Navigation;
