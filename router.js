@@ -28,6 +28,7 @@ const useRoute = (isAuth) => {
           options={{ headerShown: false }}
         />
         <AuthStack.Screen name='Login' component={LoginScreen} options={{ headerShown: false }} />
+        <AuthStack.Screen name='Home' component={HomeScreen} options={{ headerShown: false }} />
       </AuthStack.Navigator>
     );
   }
