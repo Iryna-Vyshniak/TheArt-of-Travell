@@ -1,8 +1,10 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import { View } from 'react-native';
+import { StyleSheet, Pressable } from 'react-native';
+import { HeaderBackButton } from '@react-navigation/elements';
 // icons import
 import { Feather } from '@expo/vector-icons';
+import Icon from '@expo/vector-icons/Feather';
 import { AntDesign } from '@expo/vector-icons';
 
 import LoginScreen from './screens/auth/LoginScreen';
@@ -31,25 +33,59 @@ const useRoute = (isAuth) => {
     <MainTab.Navigator
       initialRouteName='Posts'
       blurRadius={13.5914}
-      screenOptions={{
-        tabBarActiveTintColor: '#FF6C00',
+      screenOptions={({ route }) => ({
+        //   header
+        headerStyle: styles.headerBox,
+        headerRightContainerStyle: { paddingRight: 16 },
+        headerLeftContainerStyle: { paddingLeft: 16 },
+        headerTitleAlign: 'center',
+        headerPressColor: '#FF6C00',
+        headerTitleStyle: styles.headerTitle,
+        // tabs
+        tabBarActiveTintColor: '#FFFFFF',
+        tabBarInactiveTintColor: 'rgba(33, 33, 33, 0.8)',
+        tabBarActiveBackgroundColor: '#FF6C00',
+        tabBarInactiveBackgroundColor: 'transparent',
         tabBarStyle: {
           height: 83,
           paddingTop: 9,
+          paddingBottom: 20,
+          paddingHorizontal: 80,
+          height: 70,
           backgroundColor: '#FFFFFF',
           boxShadow: '0px -0.5px 0px rgba(0, 0, 0, 0.3)',
-          paddingLeft: 45,
         },
+        tabBarItemStyle: {
+          width: 70,
+          height: 40,
+          borderRadius: 20,
+        },
+        tabBarIcon: ({ focused, color }) => {
+          let iconName;
 
+          if (route.name === 'Posts') {
+            iconName = 'grid';
+          } else if (route.name === 'CreatePosts') {
+            iconName = 'plus';
+            return <AntDesign name='plus' size={13} color={color} focused={focused} />;
+          } else if (route.name === 'Profile') {
+            iconName = 'user';
+          }
+          return <Feather name={iconName} size={24} color={color} focused={focused} />;
+        },
+        tabBarIconStyle: { strokeWidth: 1 },
         tabBarShowLabel: false,
-      }}
+      })}
     >
       <MainTab.Screen
         name='Posts'
         component={PostsScreen}
         options={{
-          tabBarIcon: ({ focused, color }) => (
-            <Feather focused={focused} name='grid' color={color} size={24} />
+          title: 'Публікації',
+          headerRight: () => (
+            <Pressable>
+              <Feather name='log-out' size={24} color='#BDBDBD' />
+            </Pressable>
           ),
         }}
       />
@@ -57,43 +93,40 @@ const useRoute = (isAuth) => {
         name='CreatePosts'
         component={CreatePostsScreen}
         options={{
-          tabBarIcon: ({ focused }) => (
-            <View
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: 70,
-                height: 40,
-                backgroundColor: '#FF6C00',
-                borderRadius: 20,
-              }}
-            >
-              <AntDesign focused={focused} name='plus' color='#FFFFFF' size={24} />
-            </View>
+          title: 'Створити публікацію',
+          headerLeft: () => (
+            <HeaderBackButton
+              backImage={() => (
+                <Feather name='arrow-left' size={24} color='rgba(33, 33, 33, 0.8)' />
+              )}
+            />
           ),
+          tabBarStyle: {
+            display: 'none',
+          },
         }}
       />
-      <MainTab.Screen
-        name='Profile'
-        component={ProfileScreen}
-        options={{
-          tabBarIcon: ({ focused, color }) => (
-            <Feather focused={focused} name='user' color={color} size={24} />
-          ),
-        }}
-      />
+      <MainTab.Screen name='Profile' component={ProfileScreen} options={{ headerShown: false }} />
     </MainTab.Navigator>
   );
 };
 
 export default useRoute;
 
-//<Feather name="user" size={24} color="rgba(33, 33, 33, 0.8)" />
-//<AntDesign name="plus" size={13} color="#FFFFFF" />
-// <Feather name="grid" size={24} color="rgba(33, 33, 33, 0.8)" />
-// <Feather name="arrow-left" size={24} color="rgba(33, 33, 33, 0.8)" />
-// <Feather name="log-out" size={24} color="#BDBDBD" />
+const styles = StyleSheet.create({
+  headerBox: {
+    backgroundColor: '#FFFFFF',
+    boxShadow: '0px -0.5px 0px rgba(0, 0, 0, 0.3)',
+    borderBottomWidth: 1,
+    borderBottomColor: '#BDBDBD',
+  },
+  headerTitle: {
+    fontFamily: 'Roboto_500Medium',
+    fontSize: 17,
+    color: '#212121',
+    letterSpacing: -0.408,
+  },
+});
 
 // <Feather name="trash-2" size={24} color="#BDBDBD" />
 // <Feather name="map-pin" size={24} color="#BDBDBD" />
