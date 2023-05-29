@@ -9,7 +9,7 @@ const NestedStack = createStackNavigator();
 const PostsScreen = () => {
   return (
     <NestedStack.Navigator>
-      <NestedStack.Screen name='Home' component={HomeScreen} />
+      <NestedStack.Screen name='Home' component={HomeScreen} options={{ headerShown: false }} />
       <NestedStack.Screen name='Comments' component={CommentsScreen} />
       <NestedStack.Screen name='Map' component={MapScreen} />
     </NestedStack.Navigator>
