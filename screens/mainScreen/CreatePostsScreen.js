@@ -1,8 +1,12 @@
 import { useEffect, useState } from 'react';
+import { Camera, CameraType } from 'expo-camera';
+import * as MediaLibrary from 'expo-media-library';
+
 import {
   SafeAreaView,
   View,
   Text,
+  Image,
   TextInput,
   StyleSheet,
   KeyboardAvoidingView,
@@ -15,6 +19,10 @@ import {
 import { Feather } from '@expo/vector-icons';
 
 const CreatePostsScreen = ({ navigation }) => {
+  const [hasCameraPermissions, setHasCameraPermissions] = useState(null);
+  const [type, setType] = useState(CameraType.back);
+  const [camera, setCamera] = useState(null);
+
   const [keyboardStatus, setKeyboardStatus] = useState(false);
   const [focused, setFocused] = useState('');
   const [disabled, setDisabled] = useState(true);
@@ -29,6 +37,14 @@ const CreatePostsScreen = ({ navigation }) => {
   });
 
   const { image, title, position, location } = formData;
+
+  useEffect(() => {
+    (async () => {
+      const cameraStatus = await Camera.requestCameraPermissionsAsync();
+      await MediaLibrary.requestPermissionsAsync();
+      setHasCameraPermissions(cameraStatus === 'granted');
+    })();
+  }, []);
 
   useEffect(() => {
     if (image && title && position) {
@@ -56,6 +72,33 @@ const CreatePostsScreen = ({ navigation }) => {
     });
   };
 
+  const toggleCameraType = () => {
+    setType((current) => (current === CameraType.back ? CameraType.front : CameraType.back));
+  };
+
+  const removePhoto = async () => {
+    setFormData((prevState) => ({ ...prevState, image: '' }));
+  };
+
+  const takePhoto = async () => {
+    // if (image) {
+    //   removePhoto();
+    // } else {
+    if (camera) {
+      const { uri } = await camera.takePictureAsync();
+      await MediaLibrary.createAssetAsync(uri);
+      setFormData((prevState) => ({ ...prevState, image: uri }));
+    }
+    if (hasCameraPermissions === 'null') {
+      return <View />;
+    }
+
+    if (hasCameraPermissions === 'false') {
+      return <Text>No access to camera</Text>;
+    }
+    // }
+  };
+
   const handlePublishedPost = () => {
     keyboardHide();
     console.log(formData);
@@ -74,9 +117,21 @@ const CreatePostsScreen = ({ navigation }) => {
               paddingBottom: keyboardStatus && Platform.OS == 'android' ? 0 : 12,
             }}
           >
-            <View style={styles.addImageContainer}>
-              {image ? <Image style={photo} source={{ uri: image }} /> : null}
-              <Pressable
+            <Camera
+              style={styles.addImageContainer}
+              ref={(ref) => setCamera(ref)}
+              type={type}
+              ratio={'1:1'}
+            >
+              {image ? <Image style={styles.photo} source={{ uri: image }} /> : null}
+              <TouchableOpacity
+                style={{ position: 'absolute', top: 0, right: 0, flex: 0.1, alignSelf: 'flex-end' }}
+                onPress={toggleCameraType}
+              >
+                <Text style={{ color: '#fff' }}>Flip Camera</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={takePhoto}
                 accessibilityLabel={image ? 'Change picture' : 'Add picture'}
                 style={{
                   ...styles.addImageBtn,
@@ -88,8 +143,8 @@ const CreatePostsScreen = ({ navigation }) => {
                 ) : (
                   <Feather name='camera' size={24} color='#BDBDBD' />
                 )}
-              </Pressable>
-            </View>
+              </TouchableOpacity>
+            </Camera>
             {image ? (
               <Text style={styles.imageCapture}>Редагувати фото</Text>
             ) : (
@@ -188,6 +243,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   addImageContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
     width: '100%',
     height: 240,
     backgroundColor: '#F6F6F6',
@@ -197,6 +254,8 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   photo: {
+    flex: 1,
+    aspectRatio: 1,
     width: 343,
     height: 240,
     borderWidth: 1,
@@ -204,8 +263,8 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   addImageBtn: {
-    position: 'absolute',
-    transform: [{ translateX: 145 }, { translateY: 90 }],
+    // position: 'absolute',
+    // transform: [{ translateX: 155 }, { translateY: 90 }],
     padding: 18,
     borderRadius: 50,
   },
