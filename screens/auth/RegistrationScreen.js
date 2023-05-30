@@ -52,6 +52,11 @@ const RegistrationScreen = ({ navigation }) => {
     setShowPassword((prevState) => !prevState);
   }
 
+  const validateLogin = (str) => {
+    const loginRegex = /^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$/;
+    return loginRegex.test(str);
+  };
+
   const validateEmail = (str) => {
     const emailRegex =
       /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -63,6 +68,15 @@ const RegistrationScreen = ({ navigation }) => {
       Alert.alert('Warning', 'Login is required. Please write your login');
       return;
     }
+
+    if (!validateLogin(name)) {
+      Alert.alert(
+        'Warning',
+        'Please write valid login. Login may contain only letters, apostrophe, dash and spaces'
+      );
+      return;
+    }
+
     if (!email.trim()) {
       Alert.alert('Warning', 'Email is required. Please write your email');
       return;
@@ -79,6 +93,7 @@ const RegistrationScreen = ({ navigation }) => {
       'Credentials',
       `name: ${formData.name}, email: ${formData.email}, password: ${formData.password}`
     );
+    return navigation.navigate('Home', { screen: 'Posts' });
   };
 
   const handleAddAvatar = () => {
@@ -100,6 +115,7 @@ const RegistrationScreen = ({ navigation }) => {
     setShowPassword(false);
     console.log(formData);
     setFormData({ name: '', email: '', password: '' });
+    //navigation.navigate('Home', { screen: 'Posts' });
   };
 
   return (
@@ -234,14 +250,7 @@ const RegistrationScreen = ({ navigation }) => {
                     <Text style={styles.showText}>{showPassword ? 'Сховати' : 'Показати'}</Text>
                   </TouchableOpacity>
                 </View>
-                <TouchableOpacity
-                  onPress={() => {
-                    handleSubmit();
-                    navigation.navigate('Home', { screen: 'Posts' });
-                  }}
-                  activeOpacity={0.7}
-                  style={styles.btn}
-                >
+                <TouchableOpacity onPress={handleSubmit} activeOpacity={0.7} style={styles.btn}>
                   <Text style={styles.BtnText}>Увійти</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
