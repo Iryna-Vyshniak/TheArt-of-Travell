@@ -61,6 +61,7 @@ const LoginScreen = ({ navigation }) => {
       Alert.alert('Warning', 'Email is required. Please write your email');
       return;
     }
+
     if (!validateEmail(email)) {
       Alert.alert('Warning', 'Please write valid email');
       return;
@@ -70,7 +71,7 @@ const LoginScreen = ({ navigation }) => {
       return;
     }
     Alert.alert('Credentials', `email: ${formData.email}, password: ${formData.password}`);
-    // return navigation.navigate('Home');
+    return navigation.navigate('Home', { screen: 'Posts' });
   };
 
   const keyboardHide = () => {
@@ -84,6 +85,7 @@ const LoginScreen = ({ navigation }) => {
     setShowPassword(false);
     console.log(formData);
     setFormData({ email: '', password: '' });
+    //navigation.navigate('Home', { screen: 'Posts' });
   };
 
   return (
@@ -161,13 +163,7 @@ const LoginScreen = ({ navigation }) => {
                     <Text style={styles.showText}>{showPassword ? 'Сховати' : 'Показати'}</Text>
                   </TouchableOpacity>
                 </View>
-                <TouchableOpacity
-                  onPress={() => {
-                    handleSubmit();
-                    navigation.navigate('Home', { screen: 'Posts' });
-                  }}
-                  style={styles.btn}
-                >
+                <TouchableOpacity onPress={handleSubmit} style={styles.btn}>
                   <Text style={styles.BtnText}>Увійти</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
