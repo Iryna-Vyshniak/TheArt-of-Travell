@@ -1,6 +1,6 @@
-import { BottomTabBar, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import { StyleSheet, Pressable, Text, Alert, TouchableOpacity } from 'react-native';
+import { StyleSheet, Pressable, Text, Alert } from 'react-native';
 import { HeaderBackButton } from '@react-navigation/elements';
 
 // icons import
@@ -9,11 +9,9 @@ import { AntDesign } from '@expo/vector-icons';
 
 import LoginScreen from './screens/auth/LoginScreen';
 import RegistrationScreen from './screens/auth/RegistrationScreen';
-import PostsScreen from './screens/mainScreen/HomeScreen';
+import PostsScreen from './screens/mainScreen/DefaultPostsScreen';
 import CreatePostsScreen from './screens/mainScreen/CreatePostsScreen';
 import ProfileScreen from './screens/mainScreen/ProfileScreen';
-import HomeScreen from './screens/mainScreen/HomeScreen';
-//import HomeScreen from './screens/nestedScreens/PostsScreen';
 
 //TODO: the functionality doesn`t match the design of the layout
 
@@ -30,7 +28,7 @@ const useRoute = (isAuth) => {
           component={RegistrationScreen}
           options={{ headerShown: false }}
         />
-        <AuthStack.Screen name='Home' component={HomeScreen} options={{ headerShown: false }} />
+        <AuthStack.Screen name='Home' component={PostsScreen} options={{ headerShown: false }} />
       </AuthStack.Navigator>
     );
   }
