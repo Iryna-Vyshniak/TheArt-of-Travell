@@ -2,8 +2,7 @@ import { View, Image, Text, Pressable, StyleSheet, Button } from 'react-native';
 import Icon from '@expo/vector-icons/Feather';
 
 const PostsScreen = ({ route, navigation }) => {
-  //console.log('route.params', route.params);
-  console.log(navigation);
+  console.log('ROUTE.PARAMS: ', route);
 
   return (
     <View style={styles.container}>
