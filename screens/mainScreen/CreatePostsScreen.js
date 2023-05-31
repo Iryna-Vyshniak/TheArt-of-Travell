@@ -89,12 +89,10 @@ const CreatePostsScreen = ({ navigation }) => {
   };
 
   const sendPhoto = () => {
-    console.log('navigation:', navigation);
-    console.log(image);
-
-    navigation.navigate('MainPosts', {
-      image,
-    });
+    //console.log('navigation:', navigation);
+    // console.log('PHOTO', image);
+    // console.log(post);
+    navigation.navigate('PostsDefault', { ...post });
   };
 
   const handlePublishedPost = () => {
