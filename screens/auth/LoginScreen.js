@@ -71,7 +71,7 @@ const LoginScreen = ({ navigation }) => {
       return;
     }
     Alert.alert('Credentials', `email: ${formData.email}, password: ${formData.password}`);
-    return navigation.navigate('Home', { screen: 'Posts' });
+    return navigation.navigate('Home', { screen: 'Home' });
   };
 
   const keyboardHide = () => {
@@ -85,7 +85,6 @@ const LoginScreen = ({ navigation }) => {
     setShowPassword(false);
     console.log(formData);
     setFormData({ email: '', password: '' });
-    //navigation.navigate('Home', { screen: 'Posts' });
   };
 
   return (

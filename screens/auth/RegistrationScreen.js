@@ -93,7 +93,7 @@ const RegistrationScreen = ({ navigation }) => {
       'Credentials',
       `name: ${formData.name}, email: ${formData.email}, password: ${formData.password}`
     );
-    return navigation.navigate('Home', { screen: 'Posts' });
+    return navigation.navigate('Home', { screen: 'Home' });
   };
 
   const handleAddAvatar = () => {
