@@ -11,32 +11,33 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   Keyboard,
-  Pressable,
   TouchableOpacity,
   TouchableWithoutFeedback,
   Platform,
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 
+const initialPost = {
+  image: null,
+  title: '',
+  position: '',
+  location: {
+    latitude: '',
+    longitude: '',
+  },
+};
+
 const CreatePostsScreen = ({ navigation }) => {
   const [hasCameraPermissions, setHasCameraPermissions] = useState(null);
   const [type, setType] = useState(CameraType.back);
   const [camera, setCamera] = useState(null);
+  const [post, setPost] = useState(initialPost);
 
   const [keyboardStatus, setKeyboardStatus] = useState(false);
   const [focused, setFocused] = useState('');
   const [disabled, setDisabled] = useState(true);
-  const [formData, setFormData] = useState({
-    image: '',
-    title: '',
-    position: '',
-    location: {
-      latitude: '',
-      longitude: '',
-    },
-  });
 
-  const { image, title, position, location } = formData;
+  const { image, title, position, location } = post;
 
   useEffect(() => {
     (async () => {
@@ -61,15 +62,7 @@ const CreatePostsScreen = ({ navigation }) => {
   };
 
   const resetForm = () => {
-    setFormData({
-      image: '',
-      title: '',
-      position: '',
-      location: {
-        latitude: '',
-        longitude: '',
-      },
-    });
+    setPost(initialPost);
   };
 
   const toggleCameraType = () => {
@@ -77,17 +70,14 @@ const CreatePostsScreen = ({ navigation }) => {
   };
 
   const removePhoto = async () => {
-    setFormData((prevState) => ({ ...prevState, image: '' }));
+    setPost((prevState) => ({ ...prevState, image: null }));
   };
 
   const takePhoto = async () => {
-    // if (image) {
-    //   removePhoto();
-    // } else {
     if (camera) {
       const { uri } = await camera.takePictureAsync();
       await MediaLibrary.createAssetAsync(uri);
-      setFormData((prevState) => ({ ...prevState, image: uri }));
+      setPost((prevState) => ({ ...prevState, image: uri }));
     }
     if (hasCameraPermissions === 'null') {
       return <View />;
@@ -96,15 +86,21 @@ const CreatePostsScreen = ({ navigation }) => {
     if (hasCameraPermissions === 'false') {
       return <Text>No access to camera</Text>;
     }
-    // }
+  };
+
+  const sendPhoto = () => {
+    console.log('navigation:', navigation);
+    console.log(image);
+
+    navigation.navigate('MainPosts', {
+      image,
+    });
   };
 
   const handlePublishedPost = () => {
     keyboardHide();
-    console.log(formData);
     resetForm();
-    setDisabled(true);
-    navigation.navigate('Posts');
+    //setDisabled(true);
   };
 
   return (
@@ -123,7 +119,13 @@ const CreatePostsScreen = ({ navigation }) => {
               type={type}
               ratio={'1:1'}
             >
-              {image ? <Image style={styles.photo} source={{ uri: image }} /> : null}
+              {image ? (
+                <Image
+                  source={{ uri: image }}
+                  style={styles.photo}
+                  // style={{ ...styles.photo, height: 240, width: 343 }}
+                />
+              ) : null}
               <TouchableOpacity
                 style={{ position: 'absolute', top: 0, right: 0, flex: 0.1, alignSelf: 'flex-end' }}
                 onPress={toggleCameraType}
@@ -166,7 +168,7 @@ const CreatePostsScreen = ({ navigation }) => {
               onBlur={() => {
                 setFocused('');
               }}
-              onChangeText={(value) => setFormData((prevState) => ({ ...prevState, title: value }))}
+              onChangeText={(value) => setPost((prevState) => ({ ...prevState, title: value }))}
               style={{
                 ...styles.input,
                 borderBottomColor: focused === 'title' ? '#FF6C00' : '#E8E8E8',
@@ -188,9 +190,7 @@ const CreatePostsScreen = ({ navigation }) => {
               onBlur={() => {
                 setFocused('');
               }}
-              onChangeText={(value) =>
-                setFormData((prevState) => ({ ...prevState, position: value }))
-              }
+              onChangeText={(value) => setPost((prevState) => ({ ...prevState, position: value }))}
               style={{
                 ...styles.input,
                 borderBottomColor: focused === 'position' ? '#FF6C00' : '#E8E8E8',
@@ -199,9 +199,10 @@ const CreatePostsScreen = ({ navigation }) => {
           </View>
 
           <TouchableOpacity
-            onPress={handlePublishedPost}
-            disabled={disabled}
-            style={{ ...styles.formBtn, backgroundColor: disabled ? '#F6F6F6' : '#FF6C00' }}
+            onPress={sendPhoto}
+            //disabled={disabled}
+            style={styles.formBtn}
+            // style={{ ...styles.formBtn, backgroundColor: disabled ? '#F6F6F6' : '#FF6C00' }}
           >
             <Text
               style={disabled ? { ...styles.formBtnText, color: '#BDBDBD' } : styles.formBtnText}
@@ -254,17 +255,15 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   photo: {
-    flex: 1,
-    aspectRatio: 1,
-    width: 343,
-    height: 240,
-    borderWidth: 1,
+    width: '100%',
+    height: '100%',
     borderRadius: 8,
+    resizeMode: 'contain',
     overflow: 'hidden',
   },
   addImageBtn: {
-    // position: 'absolute',
-    // transform: [{ translateX: 155 }, { translateY: 90 }],
+    position: 'absolute',
+    //transform: [{ translateX: 155 }, { translateY: 90 }],
     padding: 18,
     borderRadius: 50,
   },
@@ -302,10 +301,12 @@ const styles = StyleSheet.create({
   },
   // button
   formBtn: {
+    marginHorizontal: 'auto',
     padding: 16,
     borderRadius: 100,
     marginTop: 32,
     width: 343,
+    backgroundColor: '#F6F6F6',
   },
 
   formBtnText: {
