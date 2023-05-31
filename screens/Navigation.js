@@ -4,7 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import useRoute from '../routerAsDesign';
 
 const Navigation = () => {
-  const routing = useRoute({});
+  const routing = useRoute(null);
 
   return <NavigationContainer>{routing}</NavigationContainer>;
 };
