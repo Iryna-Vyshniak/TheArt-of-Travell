@@ -1,6 +1,5 @@
 import { moduleName, StyleSheet, TouchableOpacity } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
-//import HomeScreen from '../nestedScreens/PostsScreen';
 import CommentsScreen from '../nestedScreens/CommentsScreen';
 import MapScreen from '../nestedScreens/MapScreen';
 import { Feather } from '@expo/vector-icons';
@@ -18,8 +17,6 @@ const DefaultPostsScreen = ({ navigation, route }) => {
   return (
     <NestedStack.Navigator>
       <NestedStack.Screen
-        // name='Home'
-        // component={HomeScreen}
         name='Home'
         component={PostsScreen}
         options={{ headerShown: false }}
@@ -62,47 +59,6 @@ const DefaultPostsScreen = ({ navigation, route }) => {
 export default DefaultPostsScreen;
 
 //TODO: the functionality doesn`t match the design of the layout
-
-// const PostsScreen = ({ navigation }) => {
-//   return (
-//     <NestedStack.Navigator>
-//       <NestedStack.Screen
-//         name='Home'
-//         component={HomeScreen}
-//         options={{ headerShown: false }}
-//         unmountOnBlur={true}
-//       />
-//       <NestedStack.Screen
-//         name='Comments'
-//         component={CommentsScreen}
-//         options={{
-//           headerTitle: 'Коментарі',
-//           headerLeft: () => (
-//             <TouchableOpacity onPress={() => navigation.goBack()}>
-//               <Feather name='arrow-left' size={24} color='#212121' style={{ marginLeft: 16 }} />
-//             </TouchableOpacity>
-//           ),
-//         }}
-//         unmountOnBlur={true}
-//       />
-//       <NestedStack.Screen
-//         name='Map'
-//         component={MapScreen}
-//         options={{
-//           headerTitle: 'Мапа',
-//           headerLeft: () => (
-//             <TouchableOpacity onPress={() => navigation.goBack()}>
-//               <Feather name='arrow-left' size={24} color='#212121' style={{ marginLeft: 16 }} />
-//             </TouchableOpacity>
-//           ),
-//         }}
-//         unmountOnBlur={true}
-//       />
-//     </NestedStack.Navigator>
-//   );
-// };
-
-// export default PostsScreen;
 
 const styles = StyleSheet.create({
   container: {
