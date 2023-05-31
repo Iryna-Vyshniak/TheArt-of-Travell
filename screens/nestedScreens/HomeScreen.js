@@ -1,7 +1,9 @@
 import { View, Image, Text, Pressable, StyleSheet, Button } from 'react-native';
 import Icon from '@expo/vector-icons/Feather';
 
-const HomeScreen = ({ navigation }) => {
+const HomeScreen = ({ route, navigation }) => {
+  //console.log('route.params', route.params);
+
   return (
     <View style={styles.container}>
       <Pressable onPress={() => navigation.navigate('Profile')} style={styles.userInfo}>
