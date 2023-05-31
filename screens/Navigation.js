@@ -4,7 +4,7 @@ import useRoute from '../router';
 //import useRoute from '../routerAsDesign';
 
 const Navigation = () => {
-  const routing = useRoute(null);
+  const routing = useRoute({});
 
   return <NavigationContainer>{routing}</NavigationContainer>;
 };

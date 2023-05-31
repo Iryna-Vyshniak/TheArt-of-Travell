@@ -96,7 +96,8 @@ const useRoute = (isAuth) => {
           headerTitleAlign: 'center',
           headerLeft: () => (
             <HeaderBackButton
-              onPress={() => navigation.navigate('Home', { screen: 'Posts' })}
+              // onPress={() => navigation.navigate('Home', { screen: 'Posts' })}
+              onPress={() => navigation.navigate('Posts', { screen: 'Posts' })}
               backImage={() => (
                 <Feather name='arrow-left' size={24} color='rgba(33, 33, 33, 0.8)' />
               )}
