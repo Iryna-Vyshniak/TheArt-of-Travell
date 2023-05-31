@@ -17,7 +17,7 @@ const DefaultPostsScreen = ({ navigation, route }) => {
   return (
     <NestedStack.Navigator>
       <NestedStack.Screen
-        name='Home'
+        name='PostsDefault'
         component={PostsScreen}
         options={{ headerShown: false }}
         unmountOnBlur={true}
