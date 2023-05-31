@@ -9,14 +9,13 @@ import { AntDesign } from '@expo/vector-icons';
 
 import LoginScreen from './screens/auth/LoginScreen';
 import RegistrationScreen from './screens/auth/RegistrationScreen';
-import PostsScreen from './screens/mainScreen/PostsScreen';
+import PostsScreen from './screens/mainScreen/HomeScreen';
 import CreatePostsScreen from './screens/mainScreen/CreatePostsScreen';
 import ProfileScreen from './screens/mainScreen/ProfileScreen';
-import HomeScreen from './screens/nestedScreens/HomeScreen';
-
+import HomeScreen from './screens/mainScreen/HomeScreen';
+//import HomeScreen from './screens/nestedScreens/PostsScreen';
 
 //TODO: the functionality doesn`t match the design of the layout
-
 
 const AuthStack = createStackNavigator();
 const MainTab = createBottomTabNavigator();

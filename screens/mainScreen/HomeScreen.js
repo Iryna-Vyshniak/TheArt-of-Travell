@@ -1,20 +1,23 @@
 import { moduleName, StyleSheet, TouchableOpacity } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
-import HomeScreen from '../nestedScreens/HomeScreen';
+//import HomeScreen from '../nestedScreens/PostsScreen';
 import CommentsScreen from '../nestedScreens/CommentsScreen';
 import MapScreen from '../nestedScreens/MapScreen';
 import { Feather } from '@expo/vector-icons';
+import PostsScreen from '../nestedScreens/PostsScreen';
 
 const NestedStack = createStackNavigator();
 
 //TODO: the functionality matches the design of the layout
 
-const PostsScreen = ({ navigation }) => {
+const HomeScreen = ({ navigation }) => {
   return (
     <NestedStack.Navigator>
       <NestedStack.Screen
-        name='Home'
-        component={HomeScreen}
+        // name='Home'
+        // component={HomeScreen}
+        name='MainPosts'
+        component={PostsScreen}
         options={{ headerShown: false }}
         unmountOnBlur={true}
       />
@@ -52,7 +55,7 @@ const PostsScreen = ({ navigation }) => {
   );
 };
 
-export default PostsScreen;
+export default HomeScreen;
 
 //TODO: the functionality doesn`t match the design of the layout
 

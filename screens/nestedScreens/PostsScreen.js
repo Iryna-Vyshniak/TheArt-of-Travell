@@ -1,12 +1,16 @@
 import { View, Image, Text, Pressable, StyleSheet, Button } from 'react-native';
 import Icon from '@expo/vector-icons/Feather';
 
-const HomeScreen = ({ route, navigation }) => {
+const PostsScreen = ({ route, navigation }) => {
   //console.log('route.params', route.params);
+  console.log(navigation);
 
   return (
     <View style={styles.container}>
-      <Pressable onPress={() => navigation.navigate('Profile')} style={styles.userInfo}>
+      <Pressable
+        onPress={() => navigation.navigate('Profile', { screen: 'ProfileScreen' })}
+        style={styles.userInfo}
+      >
         <Image
           source={require('../../assets/avatar.png')}
           resizeMode='cover'
@@ -53,7 +57,7 @@ const HomeScreen = ({ route, navigation }) => {
   );
 };
 
-export default HomeScreen;
+export default PostsScreen;
 
 const styles = StyleSheet.create({
   container: {
