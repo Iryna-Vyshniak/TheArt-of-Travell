@@ -1,6 +1,6 @@
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { BottomTabBar, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import { StyleSheet, Pressable, View, Alert } from 'react-native';
+import { StyleSheet, Pressable, Text, Alert, TouchableOpacity } from 'react-native';
 import { HeaderBackButton } from '@react-navigation/elements';
 
 // icons import
@@ -13,8 +13,10 @@ import PostsScreen from './screens/mainScreen/PostsScreen';
 import CreatePostsScreen from './screens/mainScreen/CreatePostsScreen';
 import ProfileScreen from './screens/mainScreen/ProfileScreen';
 import HomeScreen from './screens/nestedScreens/HomeScreen';
-import BtnLogOut from './components/BtnLogOut';
-//import CommentsScreen from './screens/nestedScreens/CommentsScreen';
+
+
+//TODO: the functionality doesn`t match the design of the layout
+
 
 const AuthStack = createStackNavigator();
 const MainTab = createBottomTabNavigator();
@@ -23,59 +25,42 @@ const useRoute = (isAuth) => {
   if (!isAuth) {
     return (
       <AuthStack.Navigator initialRouteName='Login' options={{ headerShown: false }}>
+        <AuthStack.Screen name='Login' component={LoginScreen} options={{ headerShown: false }} />
         <AuthStack.Screen
           name='Register'
           component={RegistrationScreen}
           options={{ headerShown: false }}
         />
-        <AuthStack.Screen name='Login' component={LoginScreen} options={{ headerShown: false }} />
         <AuthStack.Screen name='Home' component={HomeScreen} options={{ headerShown: false }} />
       </AuthStack.Navigator>
     );
   }
   return (
     <MainTab.Navigator
-      // initialRouteName='Posts'
-      initialRouteName='Home'
-      name='Home'
-      component={HomeScreen}
-      blurRadius={13.5914}
+      initialRouteName='Posts'
       screenOptions={({ route }) => ({
         //   header
         headerStyle: styles.headerBox,
         headerRightContainerStyle: { paddingRight: 16 },
         headerLeftContainerStyle: { paddingLeft: 16 },
-        headerTitleAlign: 'center',
-        headerPressColor: '#FF6C00',
         headerTitleStyle: styles.headerTitle,
         // tabs
-        tabBarActiveTintColor: '#FFFFFF',
+        tabBarActiveTintColor: '#FF6C00',
         tabBarInactiveTintColor: 'rgba(33, 33, 33, 0.8)',
-        tabBarActiveBackgroundColor: '#FF6C00',
-        tabBarInactiveBackgroundColor: 'transparent',
-        tabBarStyle: {
-          height: 83,
-          paddingTop: 9,
-          paddingBottom: 20,
-          paddingHorizontal: 80,
-          height: 70,
-          backgroundColor: '#FFFFFF',
-          boxShadow: '0px -0.5px 0px rgba(0, 0, 0, 0.3)',
-        },
-        tabBarItemStyle: {
-          width: 70,
-          height: 40,
-          borderRadius: 20,
-        },
+        tabBarStyle: styles.tabBar,
+
         tabBarIcon: ({ focused, color }) => {
           let iconName;
-
-          // if (route.name === 'Home') {
           if (route.name === 'Posts') {
             iconName = 'grid';
           } else if (route.name === 'CreatePosts') {
             iconName = 'plus';
-            return <AntDesign name='plus' size={13} color={color} focused={focused} />;
+
+            return (
+              <Text style={styles.tabBarItem}>
+                <AntDesign name='plus' size={24} color='#FFFFFF' focused={focused} />
+              </Text>
+            );
           } else if (route.name === 'Profile') {
             iconName = 'user';
           }
@@ -88,31 +73,31 @@ const useRoute = (isAuth) => {
       <MainTab.Screen
         name='Posts'
         component={PostsScreen}
-        // name='Home'
-        // component={HomeScreen}
-        options={{
+        options={({ navigation }) => ({
           title: 'Публікації',
           iconName: 'grid',
+          headerTitleAlign: 'center',
           headerRight: () => (
-            // <BtnLogOut/>
             <Pressable
               style={styles.logoutBtn}
+              //onPress={() => navigation.navigate('Login')}
               onPress={() => Alert.alert('', 'This is a log out button')}
             >
               <Feather name='log-out' size={24} color='#BDBDBD' />
             </Pressable>
           ),
-        }}
+        })}
       />
       <MainTab.Screen
         name='CreatePosts'
         component={CreatePostsScreen}
-        options={{
+        options={({ navigation }) => ({
           title: 'Створити публікацію',
           iconName: 'plus',
+          headerTitleAlign: 'center',
           headerLeft: () => (
             <HeaderBackButton
-              onPress={() => Alert.alert('', 'This is a back button')}
+              onPress={() => navigation.navigate('Home', { screen: 'Posts' })}
               backImage={() => (
                 <Feather name='arrow-left' size={24} color='rgba(33, 33, 33, 0.8)' />
               )}
@@ -121,42 +106,17 @@ const useRoute = (isAuth) => {
           tabBarStyle: {
             display: 'none',
           },
-        }}
+        })}
       />
       <MainTab.Screen
         name='Profile'
         component={ProfileScreen}
-        options={{ iconName: 'user', headerShown: false }}
+        options={({ navigation }) => ({
+          iconName: 'user',
+          headerShown: false,
+          tabBarOnPress: () => handleUserIconClick(),
+        })}
       />
-
-      {/* <MainTab.Screen
-        name='Comments'
-        component={CommentsScreen}
-        options={{
-          title: 'Коментарі',
-          headerLeft: () => (
-            <HeaderBackButton
-              backImage={() => (
-                <Feather name='arrow-left' size={24} color='rgba(33, 33, 33, 0.8)' />
-              )}
-            />
-          ),
-        }}
-      />
-      <MainTab.Screen
-        name='Map'
-        component={CommentsScreen}
-        options={{
-          title: 'Мапи',
-          headerLeft: () => (
-            <HeaderBackButton
-              backImage={() => (
-                <Feather name='arrow-left' size={24} color='rgba(33, 33, 33, 0.8)' />
-              )}
-            />
-          ),
-        }}
-      /> */}
     </MainTab.Navigator>
   );
 };
@@ -171,10 +131,26 @@ const styles = StyleSheet.create({
     borderBottomColor: '#BDBDBD',
   },
   headerTitle: {
+    color: '#212121',
     fontFamily: 'Roboto_500Medium',
     fontSize: 17,
-    color: '#212121',
     letterSpacing: -0.408,
+  },
+  tabBar: {
+    height: 83,
+    paddingTop: 9,
+    paddingBottom: 20,
+    height: 70,
+    backgroundColor: '#FFFFFF',
+    boxShadow: '0px -0.5px 0px rgba(0, 0, 0, 0.3)',
+  },
+  tabBarItem: {
+    textAlign: 'center',
+    padding: 8,
+    backgroundColor: '#FF6C00',
+    width: 70,
+    height: 40,
+    borderRadius: 20,
   },
 });
 
