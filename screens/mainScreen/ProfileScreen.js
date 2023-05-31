@@ -48,6 +48,7 @@ const ProfileScreen = ({ navigation }) => {
           {/* <BtnLogOut /> */}
           <Pressable
             style={styles.logoutBtn}
+            //onPress={() => navigation.navigate('Login', { screen: 'Login' })}
             onPress={() => Alert.alert('', 'This is a log out button')}
           >
             <Icon name='log-out' size={24} color='#BDBDBD' />
