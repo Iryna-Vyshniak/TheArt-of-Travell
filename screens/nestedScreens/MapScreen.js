@@ -22,13 +22,20 @@ const MapScreen = ({ route, navigation }) => {
     navigation.setOptions({ title: 'Maпа' });
   }, [navigation]);
 
+  console.log(typeof Number(location?.latitude)); // Переконайтеся, що тип - "number"
+  console.log(typeof Number(location?.longitude)); // Переконайтеся, що тип - "number"
+  console.log(location?.latitude); // Переконайтеся, що значення вірне
+  console.log(location?.longitude); // Переконайтеся, що значення вірне
+
   return (
     <View style={styles.container}>
       {location ? (
         <MapView
           style={{ flex: 1 }}
           region={{
-            ...location,
+            // ...location,
+            latitude: Number(location?.latitude),
+            longitude: Number(location?.longitude),
             latitudeDelta: 0.0922,
             longitudeDelta: 0.0421,
           }}
@@ -38,10 +45,10 @@ const MapScreen = ({ route, navigation }) => {
           <Marker
             title='You are here'
             coordinate={{
-              latitude: location?.latitude,
-              longitude: location?.longitude,
+              latitude: Number(location?.latitude),
+              longitude: Number(location?.longitude),
             }}
-            description='Your current location'
+            description='Photo take here'
           />
         </MapView>
       ) : (
