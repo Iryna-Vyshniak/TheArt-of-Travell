@@ -9,9 +9,11 @@ import { AntDesign } from '@expo/vector-icons';
 
 import LoginScreen from './screens/auth/LoginScreen';
 import RegistrationScreen from './screens/auth/RegistrationScreen';
-import PostsScreen from './screens/mainScreen/DefaultPostsScreen';
+import DefaultPostsScreen from './screens/nestedScreens/DefaultPostsScreen';
 import CreatePostsScreen from './screens/mainScreen/CreatePostsScreen';
 import ProfileScreen from './screens/mainScreen/ProfileScreen';
+import Home from './screens/mainScreen/Home';
+import PostsScreen from './screens/mainScreen/PostsScreen';
 
 //TODO: the functionality doesn`t match the design of the layout
 
@@ -28,7 +30,7 @@ const useRoute = (isAuth) => {
           component={RegistrationScreen}
           options={{ headerShown: false }}
         />
-        <AuthStack.Screen name='Home' component={PostsScreen} options={{ headerShown: false }} />
+        <AuthStack.Screen name='Home' component={Home} options={{ headerShown: false }} />
       </AuthStack.Navigator>
     );
   }
@@ -72,6 +74,7 @@ const useRoute = (isAuth) => {
         component={PostsScreen}
         options={({ navigation }) => ({
           title: 'Публікації',
+          headerShown: false,
           iconName: 'grid',
           headerTitleAlign: 'center',
           headerRight: () => (
@@ -123,6 +126,7 @@ export default useRoute;
 
 const styles = StyleSheet.create({
   headerBox: {
+    height: 83,
     backgroundColor: '#FFFFFF',
     boxShadow: '0px -0.5px 0px rgba(0, 0, 0, 0.3)',
     borderBottomWidth: 1,
@@ -151,5 +155,3 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
 });
-
-// <Feather name="arrow-up" size={24} color="#FFFFFF" />
