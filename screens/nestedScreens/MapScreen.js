@@ -35,13 +35,14 @@ const MapScreen = ({ route, navigation }) => {
           mapType='standard'
           minZoomLevel={8}
         >
-          {location && (
-            <Marker
-              title='You are here'
-              coordinate={location}
-              description='Your current location'
-            />
-          )}
+          <Marker
+            title='You are here'
+            coordinate={{
+              latitude: location?.latitude,
+              longitude: location?.longitude,
+            }}
+            description='Your current location'
+          />
         </MapView>
       ) : (
         <MapView
