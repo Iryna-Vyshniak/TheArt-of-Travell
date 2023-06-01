@@ -21,13 +21,14 @@ const PostsScreen = ({ navigation, route }) => {
         name='PostsDefault'
         component={DefaultPostsScreen}
         options={{
+          headerLeft: null,
           headerStyle: styles.headerBox,
           headerRightContainerStyle: { paddingRight: 16 },
           headerLeftContainerStyle: { paddingLeft: 16 },
           headerTitleStyle: styles.headerTitle,
           headerTitleAlign: 'center',
           headerRight: () => (
-            <TouchableOpacity activeOpacity={0.5} onPress={() => navigation.navigate('Login')}>
+            <TouchableOpacity onPress={() => navigation.navigate('Login')}>
               <Feather name='log-out' size={24} color='#BDBDBD' />
             </TouchableOpacity>
           ),
@@ -48,7 +49,7 @@ const PostsScreen = ({ navigation, route }) => {
         name='Map'
         component={MapScreen}
         options={{
-         headerStyle: styles.headerBox,
+          headerStyle: styles.headerBox,
           headerRightContainerStyle: { paddingRight: 16 },
           headerLeftContainerStyle: { paddingLeft: 16 },
           headerTitleStyle: styles.headerTitle,
