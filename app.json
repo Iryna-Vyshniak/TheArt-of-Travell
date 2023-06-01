@@ -8,9 +8,23 @@
     "userInterfaceStyle": "light",
     "plugins": [
       [
+        "expo-media-library",
+        {
+          "photosPermission": "Allow APP to access your photos.",
+          "savePhotosPermission": "Allow APP to save photos.",
+          "isAccessMediaLocationEnabled": true
+        }
+      ],
+      [
         "expo-camera",
         {
           "cameraPermission": "Allow the APP to access your camera."
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow APP to use your location."
         }
       ]
     ],
