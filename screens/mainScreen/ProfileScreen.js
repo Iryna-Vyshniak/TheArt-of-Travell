@@ -80,7 +80,11 @@ const ProfileScreen = ({ navigation }) => {
                   <Text style={styles.feedbackCounter}>153</Text>
                 </Pressable>
               </View>
-              <Pressable onPress={() => navigation.navigate('Map')} style={styles.location}>
+              <Pressable
+                onPress={() => Alert.alert('', 'Link to future map')}
+                style={styles.location}
+              >
+                {/* <Pressable onPress={() => navigation.navigate('Map')} style={styles.location}> */}
                 <Icon name='map-pin' size={24} color='#BDBDBD' />
                 <Text style={styles.locationTitle}>Ukraine</Text>
               </Pressable>
