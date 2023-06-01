@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Camera, CameraType } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
+import * as Location from 'expo-location';
 
 import {
   SafeAreaView,
@@ -36,14 +37,40 @@ const CreatePostsScreen = ({ navigation }) => {
   const [keyboardStatus, setKeyboardStatus] = useState(false);
   const [focused, setFocused] = useState('');
   const [disabled, setDisabled] = useState(true);
+  const [errorMsg, setErrorMsg] = useState(null);
 
-  const { image, title, position, location } = post;
+  const { image, title, position } = post;
 
   useEffect(() => {
     (async () => {
-      const cameraStatus = await Camera.requestCameraPermissionsAsync();
-      await MediaLibrary.requestPermissionsAsync();
-      setHasCameraPermissions(cameraStatus === 'granted');
+      try {
+        const cameraStatus = await Camera.requestCameraPermissionsAsync();
+        await MediaLibrary.requestPermissionsAsync();
+        setHasCameraPermissions(cameraStatus === 'granted');
+
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          setErrorMsg('Permission to access location was denied');
+          return;
+        }
+
+        let {
+          coords: { latitude, longitude },
+        } = await Location.getCurrentPositionAsync({});
+
+        console.log(latitude);
+        console.log(longitude);
+
+        // const region = await Location.reverseGeocodeAsync({ latitude, longitude });
+        // console.log('REGION', region);
+        setPost((prevState) => ({
+          ...prevState,
+          location: { latitude, longitude },
+          // position: region[0].region,
+        }));
+      } catch (error) {
+        throw new Error(errorMsg);
+      }
     })();
   }, []);
 
@@ -61,44 +88,35 @@ const CreatePostsScreen = ({ navigation }) => {
     Keyboard.dismiss();
   };
 
-  const resetForm = () => {
-    setPost(initialPost);
-  };
-
   const toggleCameraType = () => {
     setType((current) => (current === CameraType.back ? CameraType.front : CameraType.back));
-  };
-
-  const removePhoto = async () => {
-    setPost((prevState) => ({ ...prevState, image: null }));
   };
 
   const takePhoto = async () => {
     if (camera) {
       const { uri } = await camera.takePictureAsync();
       await MediaLibrary.createAssetAsync(uri);
-      setPost((prevState) => ({ ...prevState, image: uri }));
-    }
-    if (hasCameraPermissions === 'null') {
-      return <View />;
-    }
 
-    if (hasCameraPermissions === 'false') {
-      return <Text>No access to camera</Text>;
+      setPost((prevState) => ({ ...prevState, image: uri }));
+
+      if (hasCameraPermissions === 'null') {
+        return <View />;
+      }
+      if (hasCameraPermissions === 'false') {
+        return <Text>No access to camera</Text>;
+      }
     }
   };
 
-  const sendPhoto = () => {
-    //console.log('navigation:', navigation);
-    // console.log('PHOTO', image);
-    // console.log(post);
-    navigation.navigate('PostsDefault', { ...post });
+  const resetFormPost = () => {
+    setPost(initialPost);
   };
 
   const handlePublishedPost = () => {
+    navigation.navigate('PostsDefault', { ...post });
     keyboardHide();
-    resetForm();
-    //setDisabled(true);
+    resetFormPost();
+    setDisabled(true);
   };
 
   return (
@@ -111,19 +129,8 @@ const CreatePostsScreen = ({ navigation }) => {
               paddingBottom: keyboardStatus && Platform.OS == 'android' ? 0 : 12,
             }}
           >
-            <Camera
-              style={styles.addImageContainer}
-              ref={(ref) => setCamera(ref)}
-              type={type}
-              ratio={'1:1'}
-            >
-              {image ? (
-                <Image
-                  source={{ uri: image }}
-                  style={styles.photo}
-                  // style={{ ...styles.photo, height: 240, width: 343 }}
-                />
-              ) : null}
+            <Camera style={styles.addImageContainer} ref={(ref) => setCamera(ref)} type={type}>
+              {image ? <Image source={{ uri: image }} style={styles.photo} /> : null}
               <TouchableOpacity
                 style={{ position: 'absolute', top: 0, right: 0, flex: 0.1, alignSelf: 'flex-end' }}
                 onPress={toggleCameraType}
@@ -195,20 +202,20 @@ const CreatePostsScreen = ({ navigation }) => {
               }}
             />
           </View>
-
-          <TouchableOpacity
-            onPress={sendPhoto}
-            //disabled={disabled}
-            style={styles.formBtn}
-            // style={{ ...styles.formBtn, backgroundColor: disabled ? '#F6F6F6' : '#FF6C00' }}
-          >
-            <Text
-              style={disabled ? { ...styles.formBtnText, color: '#BDBDBD' } : styles.formBtnText}
+          <View style={styles.btnWrapper}>
+            <TouchableOpacity
+              onPress={handlePublishedPost}
+              disabled={disabled}
+              style={{ ...styles.formBtn, backgroundColor: disabled ? '#F6F6F6' : '#FF6C00' }}
             >
-              Опубліковати
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.deleteBtn} onPress={resetForm}>
+              <Text
+                style={disabled ? { ...styles.formBtnText, color: '#BDBDBD' } : styles.formBtnText}
+              >
+                Опубліковати
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <TouchableOpacity style={styles.deleteBtn} onPress={resetFormPost}>
             <Feather name='trash-2' size={24} color='#BDBDBD' />
           </TouchableOpacity>
         </KeyboardAvoidingView>
@@ -298,6 +305,11 @@ const styles = StyleSheet.create({
     lineHeight: 19,
   },
   // button
+  btnWrapper: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   formBtn: {
     marginHorizontal: 'auto',
     padding: 16,
