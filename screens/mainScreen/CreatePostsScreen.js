@@ -15,6 +15,8 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   Platform,
+  Pressable,
+  Vibration,
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 
@@ -96,7 +98,7 @@ const CreatePostsScreen = ({ navigation }) => {
     if (camera) {
       const { uri } = await camera.takePictureAsync();
       await MediaLibrary.createAssetAsync(uri);
-
+      Vibration.vibrate();
       setPost((prevState) => ({ ...prevState, image: uri }));
 
       if (hasCameraPermissions === 'null') {
@@ -131,13 +133,13 @@ const CreatePostsScreen = ({ navigation }) => {
           >
             <Camera style={styles.addImageContainer} ref={(ref) => setCamera(ref)} type={type}>
               {image ? <Image source={{ uri: image }} style={styles.photo} /> : null}
-              <TouchableOpacity
+              <Pressable
                 style={{ position: 'absolute', top: 0, right: 0, flex: 0.1, alignSelf: 'flex-end' }}
                 onPress={toggleCameraType}
               >
                 <Text style={{ color: '#fff' }}>Flip Camera</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
+              </Pressable>
+              <Pressable
                 onPress={takePhoto}
                 accessibilityLabel={image ? 'Change picture' : 'Add picture'}
                 style={{
@@ -150,7 +152,7 @@ const CreatePostsScreen = ({ navigation }) => {
                 ) : (
                   <Feather name='camera' size={24} color='#BDBDBD' />
                 )}
-              </TouchableOpacity>
+              </Pressable>
             </Camera>
             {image ? (
               <Text style={styles.imageCapture}>Редагувати фото</Text>
