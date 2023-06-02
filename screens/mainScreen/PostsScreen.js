@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   headerBox: {
-    height: 83,
+    height: 73,
     backgroundColor: '#FFFFFF',
     boxShadow: '0px -0.5px 0px rgba(0, 0, 0, 0.3)',
     borderBottomWidth: 1,
