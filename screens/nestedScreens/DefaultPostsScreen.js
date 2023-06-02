@@ -1,4 +1,4 @@
-import { View, Image, Text, Pressable, StyleSheet, FlatList } from 'react-native';
+import { View, Image, Text, Pressable, StyleSheet, FlatList, SafeAreaView } from 'react-native';
 import Icon from '@expo/vector-icons/Feather';
 import { useEffect, useLayoutEffect, useState } from 'react';
 
@@ -19,7 +19,7 @@ const DefaultPostsScreen = ({ route, navigation }) => {
   //console.log('USER.POSTS', userPosts);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <FlatList
         data={userPosts}
         keyExtractor={(item, idx) => idx.toString()}
@@ -39,6 +39,7 @@ const DefaultPostsScreen = ({ route, navigation }) => {
                 <Text>email@example.com</Text>
               </View>
             </Pressable>
+
             <View style={styles.card}>
               <View style={styles.imageThumb}>
                 <Image
@@ -80,7 +81,7 @@ const DefaultPostsScreen = ({ route, navigation }) => {
 
       {/* <Button title='Map' onPress={() => navigation.navigate('Map')} /> */}
       {/* <Button title='Comments' onPress={() => navigation.navigate('Comments')} /> */}
-    </View>
+    </SafeAreaView>
   );
 };
 
