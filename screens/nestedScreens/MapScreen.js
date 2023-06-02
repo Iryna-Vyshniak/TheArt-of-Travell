@@ -22,10 +22,14 @@ const MapScreen = ({ route, navigation }) => {
     navigation.setOptions({ title: 'Maпа' });
   }, [navigation]);
 
-  console.log(typeof Number(location?.latitude)); // Переконайтеся, що тип - "number"
-  console.log(typeof Number(location?.longitude)); // Переконайтеся, що тип - "number"
-  console.log(location?.latitude); // Переконайтеся, що значення вірне
-  console.log(location?.longitude); // Переконайтеся, що значення вірне
+  console.log('latitude', typeof Number(location?.latitude));
+  console.log('longitude', typeof Number(location?.longitude));
+  console.log('latitude', location?.latitude);
+  console.log('longitude', location?.longitude);
+  console.log('latitude TYPE OF', typeof location?.latitude);
+  console.log('longitude TYPE OF', typeof location?.longitude);
+  console.log('latitude', location?.latitude);
+  console.log('longitude', location?.longitude);
 
   return (
     <View style={styles.container}>
