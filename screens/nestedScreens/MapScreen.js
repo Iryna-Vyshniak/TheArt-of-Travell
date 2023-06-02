@@ -9,6 +9,10 @@ const MapScreen = ({ route, navigation }) => {
 
   const [location, setLocation] = useState({});
 
+  useLayoutEffect(() => {
+    navigation.setOptions({ title: 'Maпа' });
+  }, [navigation]);
+
   useEffect(() => {
     if (route.params) {
       setLocation({
@@ -18,57 +22,29 @@ const MapScreen = ({ route, navigation }) => {
     }
   }, [route.params]);
 
-  useLayoutEffect(() => {
-    navigation.setOptions({ title: 'Maпа' });
-  }, [navigation]);
-
-  console.log('latitude', typeof Number(location?.latitude));
-  console.log('longitude', typeof Number(location?.longitude));
-  console.log('latitude', location?.latitude);
-  console.log('longitude', location?.longitude);
-  console.log('latitude TYPE OF', typeof location?.latitude);
-  console.log('longitude TYPE OF', typeof location?.longitude);
-  console.log('latitude', location?.latitude);
-  console.log('longitude', location?.longitude);
+  // console.log('latitude', typeof Number(location?.latitude));
+  // console.log('longitude', typeof Number(location?.longitude));
+  // console.log('latitude', location?.latitude);
+  // console.log('longitude', location?.longitude);
+  // console.log('latitude TYPE OF', typeof location?.latitude);
+  // console.log('longitude TYPE OF', typeof location?.longitude);
+  // console.log('latitude', location?.latitude);
+  // console.log('longitude', location?.longitude);
 
   return (
     <View style={styles.container}>
-      {location ? (
+      {location && (
         <MapView
           style={{ flex: 1 }}
           region={{
-            // ...location,
-            latitude: Number(location?.latitude),
-            longitude: Number(location?.longitude),
+            ...location,
             latitudeDelta: 0.0922,
             longitudeDelta: 0.0421,
           }}
           mapType='standard'
           minZoomLevel={8}
         >
-          <Marker
-            title='You are here'
-            coordinate={{
-              latitude: Number(location?.latitude),
-              longitude: Number(location?.longitude),
-            }}
-            description='Photo take here'
-          />
-        </MapView>
-      ) : (
-        <MapView
-          style={{ flex: 1 }}
-          initialRegion={{
-            latitude: 37.78825,
-            longitude: -122.4324,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          }}
-        >
-          <Marker
-            coordinate={{ latitude: 37.78825, longitude: -122.4324 }}
-            title='I`m here in future'
-          />
+          <Marker title='You are here' coordinate={location} description='Photo take here' />
         </MapView>
       )}
     </View>
