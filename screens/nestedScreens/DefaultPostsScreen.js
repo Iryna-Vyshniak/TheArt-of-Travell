@@ -21,6 +21,7 @@ const DefaultPostsScreen = ({ route, navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
+        showsVerticalScrollIndicator={false}
         data={userPosts}
         keyExtractor={(item, idx) => idx.toString()}
         renderItem={({ item }) => (
