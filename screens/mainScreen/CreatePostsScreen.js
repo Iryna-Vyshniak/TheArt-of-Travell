@@ -59,7 +59,7 @@ const CreatePostsScreen = ({ navigation }) => {
     })();
   }, []);
 
-  //console.log('cameraStatus', permission);
+  console.log('cameraStatus', permission);
 
   useEffect(() => {
     if (image && title && position) {
@@ -121,36 +121,41 @@ const CreatePostsScreen = ({ navigation }) => {
               paddingBottom: keyboardStatus && Platform.OS == 'android' ? 0 : 12,
             }}
           >
-            <Camera
-              style={styles.addImageContainer}
-              ref={(ref) => {
-                setCamera(ref);
-              }}
-              type={type}
-              ratio='16:9'
-            >
-              {image ? <Image source={{ uri: image }} style={styles.photo} /> : null}
-              <Pressable
-                style={{ position: 'absolute', top: 0, right: 0, flex: 0.1, alignSelf: 'flex-end' }}
-                onPress={toggleCameraType}
-              >
-                <Text style={{ color: '#fff' }}>Flip Camera</Text>
-              </Pressable>
-              <Pressable
-                onPress={takePhoto}
-                accessibilityLabel={image ? 'Change picture' : 'Add picture'}
-                style={{
-                  ...styles.addImageBtn,
-                  backgroundColor: image ? 'rgba(255, 255, 255, 0.3)' : '#ffffff',
+            {image ? (
+              <Image source={{ uri: image }} style={styles.image} />
+            ) : (
+              <Camera
+                style={styles.addImageContainer}
+                ref={(ref) => {
+                  setCamera(ref);
                 }}
+                type={type}
+                ratio='1:1'
               >
-                {image ? (
-                  <Feather name='camera' size={24} color='#FFFFFF' />
-                ) : (
-                  <Feather name='camera' size={24} color='#BDBDBD' />
-                )}
-              </Pressable>
-            </Camera>
+                <Pressable
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    right: 0,
+                    flex: 0.1,
+                    alignSelf: 'flex-end',
+                  }}
+                  onPress={toggleCameraType}
+                >
+                  <Text style={{ color: '#fff' }}>Flip Camera</Text>
+                </Pressable>
+                <Pressable
+                  onPress={takePhoto}
+                  accessibilityLabel={image ? 'Change picture' : 'Add picture'}
+                  style={{
+                    ...styles.addImageBtn,
+                    backgroundColor: image ? 'rgba(255, 255, 255, 0.3)' : '#ffffff',
+                  }}
+                >
+                  <Feather name='camera' size={24} color={image ? '#FFFFFF' : '#BDBDBD'} />
+                </Pressable>
+              </Camera>
+            )}
             {image ? (
               <Text style={styles.imageCapture}>Редагувати фото</Text>
             ) : (
@@ -261,6 +266,13 @@ const styles = StyleSheet.create({
   photo: {
     width: '100%',
     height: '100%',
+    borderRadius: 8,
+    resizeMode: 'contain',
+    overflow: 'hidden',
+  },
+  image: {
+    width: 343,
+    height: 240,
     borderRadius: 8,
     resizeMode: 'contain',
     overflow: 'hidden',
