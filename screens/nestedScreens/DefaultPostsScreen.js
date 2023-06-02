@@ -90,8 +90,10 @@ export default DefaultPostsScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 32,
-    width: '100%',
+    paddingHorizontal: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+
     backgroundColor: '#fff',
   },
 
@@ -145,6 +147,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     flexDirection: 'row',
+    width: 343,
   },
   feedbackWrapper: {
     display: 'flex',
