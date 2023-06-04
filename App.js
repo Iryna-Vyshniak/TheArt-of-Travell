@@ -1,5 +1,8 @@
 import 'react-native-gesture-handler';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
+import { Provider } from 'react-redux';
+
+import { store } from './redux/store';
 
 import {
   useFonts,
@@ -21,9 +24,9 @@ export default function App() {
   }
 
   return (
-    // <View style={styles.container}>
-    <Navigation />
-    // </View>
+    <Provider store={store}>
+      <Navigation />
+    </Provider>
   );
 }
 
