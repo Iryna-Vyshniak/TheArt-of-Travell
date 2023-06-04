@@ -19,6 +19,9 @@ import Bg from '../../assets/login-bg.jpg';
 import { useState, useEffect } from 'react';
 import Icon from '@expo/vector-icons/Feather';
 
+import { useDispatch } from 'react-redux';
+import { authSignUpUser } from '../../redux/auth/authOperation';
+
 const RegistrationScreen = ({ navigation }) => {
   //console.log(navigation);
   // orientation change
@@ -31,9 +34,11 @@ const RegistrationScreen = ({ navigation }) => {
   const [focused, setFocused] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [userAvatar, setUserAvatar] = useState('');
-  const [formData, setFormData] = useState({ name: '', email: '', password: '' });
+  const [formData, setFormData] = useState({ photo: '', name: '', email: '', password: '' });
 
   const { name, email, password } = formData;
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const onChange = ({ window }) => {
@@ -113,7 +118,9 @@ const RegistrationScreen = ({ navigation }) => {
     checkTextInput();
     keyboardHide();
     setShowPassword(false);
-    console.log(formData);
+
+    dispatch(authSignUpUser(formData));
+
     setFormData({ name: '', email: '', password: '' });
     //navigation.navigate('Home', { screen: 'Posts' });
   };
