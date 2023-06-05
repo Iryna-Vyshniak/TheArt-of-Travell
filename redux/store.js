@@ -15,16 +15,7 @@
 
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { authSlice } from './auth/authReducer';
-import {
-  persistReducer,
-  persistStore,
-  FLUSH,
-  REHYDRATE,
-  PAUSE,
-  PERSIST,
-  PURGE,
-  REGISTER,
-} from 'redux-persist';
+import { FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
 
 const rootReducer = combineReducers({
   [authSlice.name]: authSlice.reducer,
