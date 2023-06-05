@@ -10,7 +10,7 @@ import {
   Roboto_500Medium,
   Roboto_700Bold,
 } from '@expo-google-fonts/roboto';
-import Navigation from './screens/Navigation';
+import Main from './components/Main';
 
 export default function App() {
   let [fontsLoaded] = useFonts({
@@ -25,7 +25,7 @@ export default function App() {
 
   return (
     <Provider store={store}>
-      <Navigation />
+      <Main />
     </Provider>
   );
 }
