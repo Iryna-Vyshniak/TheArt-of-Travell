@@ -14,7 +14,7 @@
 // });
 
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
-import { authSlice } from './auth/authSlice';
+import { authSlice } from './auth/authReducer';
 import {
   persistReducer,
   persistStore,

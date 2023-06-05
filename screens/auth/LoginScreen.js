@@ -13,8 +13,11 @@ import {
   Platform,
   Dimensions,
 } from 'react-native';
+import { useDispatch } from 'react-redux';
+
 import { StyleSheet } from 'react-native';
 import Bg from '../../assets/login-bg.jpg';
+import { authSignInUser } from '../../redux/auth/authOperation';
 
 const LoginScreen = ({ navigation }) => {
   // orientation change
@@ -32,6 +35,8 @@ const LoginScreen = ({ navigation }) => {
   });
 
   const { email, password } = formData;
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const onChange = ({ window }) => {
@@ -70,7 +75,6 @@ const LoginScreen = ({ navigation }) => {
       Alert.alert('Warning', 'Password is required. Please write password');
       return;
     }
-    Alert.alert('Credentials', `email: ${formData.email}, password: ${formData.password}`);
     return navigation.navigate('Home', { screen: 'Home' });
   };
 
@@ -83,7 +87,8 @@ const LoginScreen = ({ navigation }) => {
     checkTextInput();
     keyboardHide();
     setShowPassword(false);
-    console.log(formData);
+
+    dispatch(authSignInUser(formData));
     setFormData({ email: '', password: '' });
   };
 

@@ -94,10 +94,6 @@ const RegistrationScreen = ({ navigation }) => {
       Alert.alert('Warning', 'Password is required. Please write password');
       return;
     }
-    Alert.alert(
-      'Credentials',
-      `name: ${formData.name}, email: ${formData.email}, password: ${formData.password}`
-    );
     return navigation.navigate('Home', { screen: 'Home' });
   };
 
@@ -120,7 +116,6 @@ const RegistrationScreen = ({ navigation }) => {
     setShowPassword(false);
 
     dispatch(authSignUpUser(formData));
-
     setFormData({ name: '', email: '', password: '' });
     //navigation.navigate('Home', { screen: 'Posts' });
   };
