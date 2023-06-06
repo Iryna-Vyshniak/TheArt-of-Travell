@@ -14,6 +14,8 @@ import CreatePostsScreen from './screens/mainScreen/CreatePostsScreen';
 import ProfileScreen from './screens/mainScreen/ProfileScreen';
 import Home from './screens/mainScreen/Home';
 import PostsScreen from './screens/mainScreen/PostsScreen';
+import { useDispatch } from 'react-redux';
+import { authSignOutUser } from './redux/auth/authOperation';
 
 //TODO: the functionality doesn`t match the design of the layout
 
@@ -21,6 +23,12 @@ const AuthStack = createStackNavigator();
 const MainTab = createBottomTabNavigator();
 
 const useRoute = (isAuth) => {
+  const dispatch = useDispatch;
+
+  const signOut = () => {
+    dispatch(authSignOutUser());
+  };
+
   if (!isAuth) {
     return (
       <AuthStack.Navigator initialRouteName='Login' options={{ headerShown: false }}>
@@ -79,11 +87,7 @@ const useRoute = (isAuth) => {
           iconName: 'grid',
           headerTitleAlign: 'center',
           headerRight: () => (
-            <Pressable
-              style={styles.logoutBtn}
-              //onPress={() => navigation.navigate('Login')}
-              onPress={() => Alert.alert('', 'This is a log out button')}
-            >
+            <Pressable style={styles.logoutBtn} onPress={signOut}>
               <Feather name='log-out' size={24} color='#BDBDBD' />
             </Pressable>
           ),
@@ -98,7 +102,6 @@ const useRoute = (isAuth) => {
           headerTitleAlign: 'center',
           headerLeft: () => (
             <HeaderBackButton
-              // onPress={() => navigation.navigate('Home', { screen: 'Posts' })}
               onPress={() => navigation.navigate('Posts', { screen: 'Posts' })}
               backImage={() => (
                 <Feather name='arrow-left' size={24} color='rgba(33, 33, 33, 0.8)' />
