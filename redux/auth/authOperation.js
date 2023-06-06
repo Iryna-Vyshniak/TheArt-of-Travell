@@ -4,10 +4,11 @@ import {
   signInWithEmailAndPassword,
   onAuthStateChanged,
   updateProfile,
+  signOut,
 } from 'firebase/auth';
 import { auth } from '../../firebase/config';
 import { authSlice } from './authReducer';
-const { updateUserProfile, authStateChange } = authSlice.actions;
+const { updateUserProfile, authStateChange, authSignOut } = authSlice.actions;
 
 export const authSignUpUser =
   ({ email, password, name }) =>
@@ -30,8 +31,19 @@ export const authSignUpUser =
         })
       );
     } catch (error) {
-      Alert.alert(error.message);
-      throw error;
+      const errorCode = error.code;
+
+      if (errorCode == 'auth/weak-password') {
+        Alert.alert('The password is too weak');
+      }
+      if (errorCode == 'auth/email-already-in-use') {
+        Alert.alert('Already exists an account with the given email address');
+      }
+      if (errorCode == 'auth/invalid-email') {
+        Alert.alert('Email address is not valid');
+      } else {
+        throw error;
+      }
     }
   };
 
@@ -54,8 +66,24 @@ export const authSignInUser =
         })
       );
     } catch (error) {
-      Alert.alert("Error! Email or password doesn't match");
-      throw error;
+      const errorCode = error.code;
+
+      if (errorCode === 'auth/wrong-password') {
+        Alert.alert(
+          'Password is invalid for the given email, or the account corresponding to the email does not have a password set'
+        );
+      }
+      if (errorCode === 'auth/user-not-found') {
+        Alert.alert('No user corresponding to the given email');
+      }
+      if (errorCode === 'auth/user-disabled') {
+        Alert.alert('User corresponding to the given email has been disabled');
+      }
+      if (errorCode === 'auth/invalid-email') {
+        Alert.alert('Email address is not valid');
+      } else {
+        throw error;
+      }
     }
   };
 
@@ -69,12 +97,23 @@ export const authStateChangeUser = () => async (dispatch) => {
           email: user.email,
         };
 
-        dispatch(updateUserProfile(userUpdateProfile));
         dispatch(authStateChange({ stateChange: true }));
+        dispatch(updateUserProfile(userUpdateProfile));
       }
     } catch (error) {
-      Alert.alert(error.message);
+      signOut(auth);
+      dispatch(authSignOut());
       throw error;
     }
   });
+};
+
+export const authSignOutUser = () => async (dispatch, getState) => {
+  try {
+    await signOut(auth);
+    dispatch(authSignOut());
+  } catch (error) {
+    Alert.alert(error.message);
+    throw error;
+  }
 };
