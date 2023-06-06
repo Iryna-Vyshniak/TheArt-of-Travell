@@ -5,6 +5,8 @@ import MapScreen from '../nestedScreens/MapScreen';
 import { Feather } from '@expo/vector-icons';
 
 import DefaultPostsScreen from '../nestedScreens/DefaultPostsScreen';
+import { authSignOutUser } from '../../redux/auth/authOperation';
+import { useDispatch } from 'react-redux';
 
 const NestedStack = createStackNavigator();
 
@@ -14,6 +16,12 @@ const PostsScreen = ({ navigation, route }) => {
   if (route.state && route.state.index > 0) {
     navigation.setOptions({ tabBarVisible: false });
   } else ({ tabBarVisible: true });
+
+  const dispatch = useDispatch();
+
+  const signOut = () => {
+    dispatch(authSignOutUser());
+  };
 
   return (
     <NestedStack.Navigator>
@@ -28,7 +36,7 @@ const PostsScreen = ({ navigation, route }) => {
           headerTitleStyle: styles.headerTitle,
           headerTitleAlign: 'center',
           headerRight: () => (
-            <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+            <TouchableOpacity onPress={signOut}>
               <Feather name='log-out' size={24} color='#BDBDBD' />
             </TouchableOpacity>
           ),

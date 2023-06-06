@@ -4,10 +4,16 @@ import Bg from '../../assets/login-bg.jpg';
 import Icon from '@expo/vector-icons/Feather';
 
 import { useState } from 'react';
-import BtnLogOut from '../../components/BtnLogOut';
+import { useDispatch } from 'react-redux';
+import { authSignOutUser } from '../../redux/auth/authOperation';
+import { db } from '../../firebase/config';
+
+// import BtnLogOut from '../../components/BtnLogOut';
 
 const ProfileScreen = ({ navigation }) => {
   const [userAvatar, setUserAvatar] = useState(null);
+
+  const dispatch = useDispatch();
 
   const handleAddAvatar = () => {
     setUserAvatar(require('../../assets/avatar.png'));
@@ -15,6 +21,10 @@ const ProfileScreen = ({ navigation }) => {
 
   const handleRemoveAvatar = () => {
     setUserAvatar(null);
+  };
+
+  const signOut = () => {
+    dispatch(authSignOutUser());
   };
 
   return (
@@ -46,11 +56,7 @@ const ProfileScreen = ({ navigation }) => {
             </Pressable>
           </View>
           {/* <BtnLogOut /> */}
-          <Pressable
-            style={styles.logoutBtn}
-            //onPress={() => navigation.navigate('Login', { screen: 'Login' })}
-            onPress={() => Alert.alert('', 'This is a log out button')}
-          >
+          <Pressable style={styles.logoutBtn} onPress={signOut}>
             <Icon name='log-out' size={24} color='#BDBDBD' />
           </Pressable>
           <Text style={styles.name}>Natali Romanova</Text>

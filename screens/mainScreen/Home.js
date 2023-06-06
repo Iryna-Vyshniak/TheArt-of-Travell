@@ -9,14 +9,22 @@ import ProfileScreen from './ProfileScreen';
 import CreatePostsScreen from './CreatePostsScreen';
 import PostsScreen from '../nestedScreens/DefaultPostsScreen';
 import DefaultPostsScreen from './PostsScreen';
+import { useDispatch } from 'react-redux';
+import { authSignOutUser } from '../../redux/auth/authOperation';
 
 //TODO: the functionality matches the design of the layout
 
 const MainTab = createBottomTabNavigator();
-const PostsTab = createBottomTabNavigator();
-const ProfileTab = createBottomTabNavigator();
+// const PostsTab = createBottomTabNavigator();
+// const ProfileTab = createBottomTabNavigator();
 
 export const Home = ({ navigation }) => {
+  const dispatch = useDispatch;
+
+  const signOut = () => {
+    dispatch(authSignOutUser());
+  };
+
   return (
     <MainTab.Navigator
       initialRouteName='Posts'
@@ -54,21 +62,17 @@ export const Home = ({ navigation }) => {
       <MainTab.Screen
         name='Posts'
         component={DefaultPostsScreen}
-        options={({ navigation }) => ({
+        options={{
           title: 'Публікації',
           headerShown: false,
           iconName: 'grid',
           headerTitleAlign: 'center',
           headerRight: () => (
-            <Pressable
-              style={styles.logoutBtn}
-              //onPress={() => navigation.navigate('Login')}
-              onPress={() => Alert.alert('', 'This is a log out button')}
-            >
+            <Pressable style={styles.logoutBtn} onPress={signOut}>
               <Feather name='log-out' size={24} color='#BDBDBD' />
             </Pressable>
           ),
-        })}
+        }}
       />
       <MainTab.Screen
         name='CreatePosts'
@@ -97,7 +101,6 @@ export const Home = ({ navigation }) => {
         options={({ navigation }) => ({
           iconName: 'user',
           headerShown: false,
-          tabBarOnPress: () => handleUserIconClick(),
         })}
       />
     </MainTab.Navigator>
