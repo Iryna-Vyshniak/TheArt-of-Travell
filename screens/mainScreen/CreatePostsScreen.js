@@ -2,7 +2,12 @@ import { useEffect, useState } from 'react';
 import { Camera, CameraType } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 import * as Location from 'expo-location';
+import { db, storage } from '../../firebase/config';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { addDoc, collection } from 'firebase/firestore';
+import { useSelector } from 'react-redux';
 
+import { Feather } from '@expo/vector-icons';
 import {
   SafeAreaView,
   View,
@@ -18,9 +23,6 @@ import {
   Pressable,
   Vibration,
 } from 'react-native';
-import { Feather } from '@expo/vector-icons';
-import { storage } from '../../firebase/config';
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 
 const initialPost = {
   image: null,
@@ -43,6 +45,7 @@ const CreatePostsScreen = ({ navigation }) => {
   const [disabled, setDisabled] = useState(true);
 
   const { image, title, position } = post;
+  const { userId, name } = useSelector((state) => state.auth);
 
   useEffect(() => {
     (async () => {
@@ -57,11 +60,12 @@ const CreatePostsScreen = ({ navigation }) => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         console.log('Permission to access location was denied');
+        return;
       }
     })();
   }, []);
 
-  console.log('cameraStatus', permission);
+  //console.log('cameraStatus', permission);
 
   useEffect(() => {
     if (image && title && position) {
@@ -72,17 +76,22 @@ const CreatePostsScreen = ({ navigation }) => {
     }
   }, [image, title, position]);
 
+  // get location
+  const getLocation = async () => {
+    let {
+      coords: { latitude, longitude },
+    } = await Location.getCurrentPositionAsync({});
+    setPost((prevState) => ({ ...prevState, location: { latitude, longitude } }));
+  };
+
   // take photo
   const takePhoto = async () => {
     if (camera) {
       const { uri } = await camera.takePictureAsync();
       await MediaLibrary.createAssetAsync(uri);
       Vibration.vibrate();
-      // location
-      let {
-        coords: { latitude, longitude },
-      } = await Location.getCurrentPositionAsync({});
-      setPost((prevState) => ({ ...prevState, image: uri, location: { latitude, longitude } }));
+      getLocation();
+      setPost((prevState) => ({ ...prevState, image: uri }));
     }
   };
 
@@ -95,7 +104,6 @@ const CreatePostsScreen = ({ navigation }) => {
     const uniqueImageId = Date.now().toString();
     const path = `images/${uniqueImageId}.jpeg`;
 
-    //await db.storage().ref(path).put(file);
     const storageRef = ref(storage, path);
 
     const metadata = {
@@ -107,6 +115,29 @@ const CreatePostsScreen = ({ navigation }) => {
     const downloadPhoto = await getDownloadURL(storageRef);
     console.log('downloadPhoto:', downloadPhoto);
     return downloadPhoto;
+  };
+
+  // upload post to server
+  const uploadPostToServer = async () => {
+    const photo = await uploadPhotoToServer();
+
+    // Cloud Firestore stores data in Documents, which are stored in Collections
+    const newPost = {
+      photo,
+      title,
+      location: post.location,
+      comments: [],
+      likes: [],
+      userId,
+      name,
+    };
+
+    try {
+      await addDoc(collection(db, 'posts'), newPost);
+      console.log('Post is loaded. Well Done', newPost);
+    } catch (error) {
+      console.error('Error while adding doc: ', error.message);
+    }
   };
 
   const keyboardHide = () => {
@@ -123,8 +154,9 @@ const CreatePostsScreen = ({ navigation }) => {
   };
 
   const handlePublishedPost = () => {
-    uploadPhotoToServer();
-
+    // uploadPhotoToServer();
+    uploadPostToServer();
+    console.log(post.title, post.location);
     navigation.navigate('PostsDefault', { ...post });
     keyboardHide();
     resetFormPost();
