@@ -19,6 +19,8 @@ import {
   Vibration,
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
+import { storage } from '../../firebase/config';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 
 const initialPost = {
   image: null,
@@ -70,6 +72,7 @@ const CreatePostsScreen = ({ navigation }) => {
     }
   }, [image, title, position]);
 
+  // take photo
   const takePhoto = async () => {
     if (camera) {
       const { uri } = await camera.takePictureAsync();
@@ -81,6 +84,29 @@ const CreatePostsScreen = ({ navigation }) => {
       } = await Location.getCurrentPositionAsync({});
       setPost((prevState) => ({ ...prevState, image: uri, location: { latitude, longitude } }));
     }
+  };
+
+  // upload photo to server
+  // 'file' comes from the Blob
+  const uploadPhotoToServer = async () => {
+    const response = await fetch(image);
+    const file = await response.blob();
+
+    const uniqueImageId = Date.now().toString();
+    const path = `images/${uniqueImageId}.jpeg`;
+
+    //await db.storage().ref(path).put(file);
+    const storageRef = ref(storage, path);
+
+    const metadata = {
+      contentType: 'image/jpeg',
+    };
+
+    await uploadBytes(storageRef, file, metadata);
+
+    const downloadPhoto = await getDownloadURL(storageRef);
+    console.log('downloadPhoto:', downloadPhoto);
+    return downloadPhoto;
   };
 
   const keyboardHide = () => {
@@ -97,6 +123,8 @@ const CreatePostsScreen = ({ navigation }) => {
   };
 
   const handlePublishedPost = () => {
+    uploadPhotoToServer();
+
     navigation.navigate('PostsDefault', { ...post });
     keyboardHide();
     resetFormPost();
@@ -122,7 +150,19 @@ const CreatePostsScreen = ({ navigation }) => {
             }}
           >
             {image ? (
-              <Image source={{ uri: image }} style={styles.image} />
+              <View style={styles.addImageContainer}>
+                <Image source={{ uri: image }} style={styles.image} />
+                <Pressable
+                  onPress={takePhoto}
+                  accessibilityLabel={'Change picture'}
+                  style={{
+                    ...styles.addImageBtn,
+                    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+                  }}
+                >
+                  <Feather name='camera' size={24} color={'#FFFFFF'} />
+                </Pressable>
+              </View>
             ) : (
               <Camera
                 style={styles.addImageContainer}
@@ -146,13 +186,13 @@ const CreatePostsScreen = ({ navigation }) => {
                 </Pressable>
                 <Pressable
                   onPress={takePhoto}
-                  accessibilityLabel={image ? 'Change picture' : 'Add picture'}
+                  accessibilityLabel={'Add picture'}
                   style={{
                     ...styles.addImageBtn,
-                    backgroundColor: image ? 'rgba(255, 255, 255, 0.3)' : '#ffffff',
+                    backgroundColor: '#ffffff',
                   }}
                 >
-                  <Feather name='camera' size={24} color={image ? '#FFFFFF' : '#BDBDBD'} />
+                  <Feather name='camera' size={24} color={'#BDBDBD'} />
                 </Pressable>
               </Camera>
             )}
@@ -271,7 +311,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   image: {
-    width: 343,
+    width: '100%',
     height: 240,
     borderRadius: 8,
     resizeMode: 'contain',
