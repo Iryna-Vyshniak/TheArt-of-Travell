@@ -125,6 +125,7 @@ const CreatePostsScreen = ({ navigation }) => {
     const newPost = {
       photo,
       title,
+      position,
       location: post.location,
       comments: [],
       likes: [],
@@ -154,9 +155,7 @@ const CreatePostsScreen = ({ navigation }) => {
   };
 
   const handlePublishedPost = () => {
-    // uploadPhotoToServer();
     uploadPostToServer();
-    console.log(post.title, post.location);
     navigation.navigate('PostsDefault', { ...post });
     keyboardHide();
     resetFormPost();
@@ -281,7 +280,7 @@ const CreatePostsScreen = ({ navigation }) => {
           <View style={styles.btnWrapper}>
             <TouchableOpacity
               onPress={handlePublishedPost}
-              //disabled={disabled}
+              disabled={disabled}
               style={{ ...styles.formBtn, backgroundColor: disabled ? '#F6F6F6' : '#FF6C00' }}
             >
               <Text
