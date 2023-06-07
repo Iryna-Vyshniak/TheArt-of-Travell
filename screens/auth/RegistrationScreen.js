@@ -9,21 +9,18 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   Alert,
-  Pressable,
-  Image,
   Platform,
   Dimensions,
 } from 'react-native';
 import { StyleSheet } from 'react-native';
 import Bg from '../../assets/login-bg.jpg';
 import { useState, useEffect } from 'react';
-import Icon from '@expo/vector-icons/Feather';
 
 import { useDispatch } from 'react-redux';
 import { authSignUpUser } from '../../redux/auth/authOperation';
+import { Avatar } from '../../components/Avatar';
 
 const RegistrationScreen = ({ navigation }) => {
-  //console.log(navigation);
   // orientation change
   const [dimensions, setDimensions] = useState({
     windowWidth: Dimensions.get('window').width - 8 * 2,
@@ -33,7 +30,6 @@ const RegistrationScreen = ({ navigation }) => {
   const [keyboardStatus, setKeyboardStatus] = useState(false);
   const [focused, setFocused] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [userAvatar, setUserAvatar] = useState('');
   const [formData, setFormData] = useState({ photo: '', name: '', email: '', password: '' });
 
   const { name, email, password } = formData;
@@ -97,14 +93,6 @@ const RegistrationScreen = ({ navigation }) => {
     return navigation.navigate('Home', { screen: 'Home' });
   };
 
-  const handleAddAvatar = () => {
-    setUserAvatar(require('../../assets/avatar.png'));
-  };
-
-  const handleRemoveAvatar = () => {
-    setUserAvatar(null);
-  };
-
   const keyboardHide = () => {
     setKeyboardStatus(false);
     Keyboard.dismiss();
@@ -138,30 +126,7 @@ const RegistrationScreen = ({ navigation }) => {
                 // maxHeight: isPortrait ? dimensions.windowHeight * 0.61 : '100%',
               }}
             >
-              <View style={styles.box}>
-                {userAvatar ? (
-                  <Image source={require('../../assets/avatar.png')} resizeMode='cover' />
-                ) : null}
-                <Pressable
-                  onPress={userAvatar ? handleRemoveAvatar : handleAddAvatar}
-                  accessibilityLabel={userAvatar ? 'Remove Avatar' : 'Add Avatar'}
-                  style={{
-                    ...styles.btnAdd,
-                    borderColor: userAvatar ? '#E8E8E8' : '#FF6C00',
-                  }}
-                >
-                  {userAvatar ? (
-                    <Icon
-                      name='plus'
-                      size={20}
-                      color='#E8E8E8'
-                      style={{ transform: [{ rotate: '-45deg' }] }}
-                    />
-                  ) : (
-                    <Icon name='plus' size={20} color='#FF6C00' />
-                  )}
-                </Pressable>
-              </View>
+              <Avatar />
               <Text
                 style={{
                   ...styles.title,
