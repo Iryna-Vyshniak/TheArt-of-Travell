@@ -8,26 +8,27 @@ import {
 } from 'firebase/auth';
 import { auth } from '../../firebase/config';
 import { authSlice } from './authReducer';
-const { updateUserProfile, authStateChange, authSignOut } = authSlice.actions;
+const { updateUserProfile, authStateChange, updateUserAvatar, authSignOut } = authSlice.actions;
 
 export const authSignUpUser =
   ({ email, password, name }) =>
   async (dispatch, getState) => {
-    console.log('FORMDATA ===>', email, password, name);
+    console.log('FORMDATA: ', email, password, name, userAvatar);
     try {
       await createUserWithEmailAndPassword(auth, email, password);
       const user = auth.currentUser;
 
-      await updateProfile(user, { displayName: name });
+      await updateProfile(user, { displayName: name, photoURL: userAvatar });
 
-      const { uid, displayName } = user;
-      console.log(displayName, uid);
+      const { uid, displayName, photoURL } = user;
+      //console.log(displayName, uid);
 
       dispatch(
         updateUserProfile({
           userId: uid,
           name: displayName,
           email,
+          avatar: photoURL,
         })
       );
     } catch (error) {
@@ -62,6 +63,7 @@ export const authSignInUser =
         updateUserProfile({
           userId: uid,
           name: displayName,
+          userAvatar: user.photoURL,
           email,
         })
       );
@@ -95,6 +97,7 @@ export const authStateChangeUser = () => async (dispatch) => {
           userId: user.uid,
           name: user.displayName,
           email: user.email,
+          userAvatar: user.photoURL,
         };
 
         dispatch(authStateChange({ stateChange: true }));
@@ -106,6 +109,17 @@ export const authStateChangeUser = () => async (dispatch) => {
       throw error;
     }
   });
+};
+
+export const changeAvatarUser = (processedAvatarURL) => async (dispatch, getState) => {
+  const user = auth.currentUser;
+  // Check if this is 'Registration' or 'Profile'. If 'Registration', then user doesn't exist yet...
+  if (user !== null) {
+    await updateProfile(user, {
+      photoURL: processedAvatarURL,
+    });
+  }
+  dispatch(updateUserAvatar({ avatar: processedAvatarURL }));
 };
 
 export const authSignOutUser = () => async (dispatch, getState) => {
