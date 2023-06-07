@@ -14,6 +14,9 @@ import {
 } from 'react-native';
 
 import { Feather } from '@expo/vector-icons';
+import { useSelector } from 'react-redux';
+import { db } from '../../firebase/config';
+import { collection, doc, addDoc, onSnapshot, updateDoc } from 'firebase/firestore';
 
 const data = [
   {
@@ -55,7 +58,29 @@ const CommentsScreen = ({ navigation, route }) => {
   const [comment, setComment] = useState('');
   const [comments, setComments] = useState([]);
 
-  const createPost = () => {};
+  const { name, avatarImage } = useSelector((state) => state.auth);
+  const { postId } = route.params;
+  //console.log('POST-ID', photo);
+
+  const createPost = async () => {
+    const date = new Date().toLocaleDateString();
+    const time = new Date().toLocaleTimeString();
+
+    const postDocRef = await doc(db, 'posts', postId);
+    await addDoc(collection(postDocRef, 'comments'), {
+      comment,
+      name,
+      date,
+      time,
+      commentAvatar: avatarImage,
+    });
+    //await updateDoc(postDocRef);
+    // db.firestore()
+    //   .collection('posts')
+    //   .doc(postId)
+    //   .collection('comments')
+    //   .add({ comment, login, date, time, commentAvatar: avatarImage });
+  };
 
   const keyboardHide = () => {
     setIsShowKeyboard(false);

@@ -1,11 +1,14 @@
 import { View, Image, Text, Pressable, StyleSheet, FlatList, SafeAreaView } from 'react-native';
 import Icon from '@expo/vector-icons/Feather';
 import { useEffect, useLayoutEffect, useState } from 'react';
-import { collection, onSnapshot } from 'firebase/firestore';
+import { collection, onSnapshot, query } from 'firebase/firestore';
 import { db } from '../../firebase/config';
+import { useSelector } from 'react-redux';
 
 const DefaultPostsScreen = ({ route, navigation }) => {
   const [userPosts, setUserPosts] = useState([]);
+
+  const { name, email, avatarImage } = useSelector((state) => state.auth);
 
   useLayoutEffect(() => {
     navigation.setOptions({ title: 'Публікації' });
@@ -13,9 +16,9 @@ const DefaultPostsScreen = ({ route, navigation }) => {
 
   // get all posts from server
   const getAllPosts = async () => {
-    const postsRef = collection(db, 'posts');
-    onSnapshot(postsRef, (querySnapshot) => {
-      setUserPosts(querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+    const postsRef = query(collection(db, 'posts'));
+    onSnapshot(postsRef, (snapshot) => {
+      setUserPosts(snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
     });
   };
 
@@ -41,8 +44,8 @@ const DefaultPostsScreen = ({ route, navigation }) => {
                 style={{ width: 60, height: 60, borderRadius: 16, marginRight: 8 }}
               />
               <View>
-                <Text style={styles.userName}>Natali Romanova</Text>
-                <Text>email@example.com</Text>
+                <Text style={styles.userName}>{name}</Text>
+                <Text>{email}</Text>
               </View>
             </Pressable>
 
@@ -61,7 +64,7 @@ const DefaultPostsScreen = ({ route, navigation }) => {
                 <View style={styles.feedbackWrapper}>
                   <Pressable
                     style={styles.feedback}
-                    onPress={() => navigation.navigate('Comments')}
+                    onPress={() => navigation.navigate('Comments', { postId: item.id })}
                   >
                     <Icon
                       name='message-circle'
@@ -84,9 +87,6 @@ const DefaultPostsScreen = ({ route, navigation }) => {
           </>
         )}
       />
-
-      {/* <Button title='Map' onPress={() => navigation.navigate('Map')} /> */}
-      {/* <Button title='Comments' onPress={() => navigation.navigate('Comments')} /> */}
     </SafeAreaView>
   );
 };
