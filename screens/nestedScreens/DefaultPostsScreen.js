@@ -1,6 +1,8 @@
 import { View, Image, Text, Pressable, StyleSheet, FlatList, SafeAreaView } from 'react-native';
 import Icon from '@expo/vector-icons/Feather';
 import { useEffect, useLayoutEffect, useState } from 'react';
+import { collection, onSnapshot } from 'firebase/firestore';
+import { db } from '../../firebase/config';
 
 const DefaultPostsScreen = ({ route, navigation }) => {
   const [userPosts, setUserPosts] = useState([]);
@@ -9,21 +11,24 @@ const DefaultPostsScreen = ({ route, navigation }) => {
     navigation.setOptions({ title: 'Публікації' });
   }, [navigation]);
 
-  useEffect(() => {
-    if (route.params) {
-      // console.log('ROUTE.PARAMS.location: ', route?.params[0]?.location);
-      setUserPosts((prevState) => [...prevState, route.params]);
-    }
-  }, [route.params]);
+  // get all posts from server
+  const getAllPosts = async () => {
+    const postsRef = collection(db, 'posts');
+    onSnapshot(postsRef, (querySnapshot) => {
+      setUserPosts(querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+    });
+  };
 
-  //console.log('USER.POSTS', userPosts);
+  useEffect(() => {
+    getAllPosts();
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
         showsVerticalScrollIndicator={false}
         data={userPosts}
-        keyExtractor={(item, idx) => idx.toString()}
+        keyExtractor={(_, idx) => idx.toString()}
         renderItem={({ item }) => (
           <>
             <Pressable
@@ -45,7 +50,7 @@ const DefaultPostsScreen = ({ route, navigation }) => {
               <View style={styles.imageThumb}>
                 <Image
                   source={{
-                    uri: `${item.image}`,
+                    uri: `${item.photo}`,
                     // uri: 'https://images.unsplash.com/photo-1592859600972-1b0834d83747?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80',
                   }}
                   style={{ ...styles.picture, width: 343, height: 240 }}
