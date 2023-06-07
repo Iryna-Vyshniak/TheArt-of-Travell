@@ -1,5 +1,6 @@
-import { useLayoutEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import {
+  Alert,
   ScrollView,
   SafeAreaView,
   View,
@@ -60,9 +61,8 @@ const CommentsScreen = ({ navigation, route }) => {
 
   const { name, avatarImage } = useSelector((state) => state.auth);
   const { postId } = route.params;
-  //console.log('POST-ID', photo);
 
-  const createPost = async () => {
+  const createCommment = async () => {
     const date = new Date().toLocaleDateString();
     const time = new Date().toLocaleTimeString();
 
@@ -74,12 +74,14 @@ const CommentsScreen = ({ navigation, route }) => {
       time,
       commentAvatar: avatarImage,
     });
-    //await updateDoc(postDocRef);
-    // db.firestore()
-    //   .collection('posts')
-    //   .doc(postId)
-    //   .collection('comments')
-    //   .add({ comment, login, date, time, commentAvatar: avatarImage });
+  };
+
+  // get all comments
+  const getAllComments = async () => {
+    const postDocRef = await doc(db, 'posts', postId);
+    onSnapshot(collection(postDocRef, 'comments'), (snapshot) =>
+      setComments(snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })))
+    );
   };
 
   const keyboardHide = () => {
@@ -90,6 +92,23 @@ const CommentsScreen = ({ navigation, route }) => {
   useLayoutEffect(() => {
     navigation.setOptions({ title: 'Коментарі', tabBarStyle: { display: 'none' } });
   }, [navigation]);
+
+  useEffect(() => {
+    getAllComments();
+  }, []);
+
+  // send comment
+
+  const handleSendComment = () => {
+    if (!comment.trim()) {
+      Alert.alert(`Будь ласка, введіть свій коментар 😌`);
+      return;
+    }
+    createCommment();
+    Keyboard.dismiss();
+    Alert.alert(`Ваш коментар успішно надіслано 😉`);
+    setComment('');
+  };
 
   return (
     <View style={styles.container}>
@@ -106,8 +125,8 @@ const CommentsScreen = ({ navigation, route }) => {
             </View>
 
             <FlatList
-              data={data}
-              keyExtractor={(_, index) => index.toString()}
+              data={comments}
+              keyExtractor={(item) => item.id.toString()}
               renderItem={({ item }) => (
                 <View style={styles.wrapper}>
                   <View>
@@ -126,9 +145,11 @@ const CommentsScreen = ({ navigation, route }) => {
                   <View style={styles.commentWrapper}>
                     <Text style={styles.userName}>{item.name}</Text>
                     <View style={styles.innerCommentsWrapper}>
-                      <Text style={styles.comments}>{item.text}</Text>
+                      <Text style={styles.comments}>{item.comment}</Text>
                     </View>
-                    <Text style={styles.commentDate}>{item.date}</Text>
+                    <Text style={styles.commentDate}>
+                      {item.date} | {item.time}
+                    </Text>
                   </View>
                 </View>
               )}
@@ -154,7 +175,7 @@ const CommentsScreen = ({ navigation, route }) => {
             setIsShowKeyboard(true);
           }}
         />
-        <TouchableOpacity style={styles.sendBtn} onPress={createPost}>
+        <TouchableOpacity style={styles.sendBtn} onPress={handleSendComment}>
           <Feather name='arrow-up' size={24} color='#FFFFFF' />
         </TouchableOpacity>
       </View>
