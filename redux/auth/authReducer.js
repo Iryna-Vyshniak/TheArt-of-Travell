@@ -5,6 +5,7 @@ const state = {
   name: null,
   email: null,
   stateChange: false,
+  userAvatar: null,
 };
 
 const actions = {
@@ -13,6 +14,11 @@ const actions = {
     userId: payload.userId,
     name: payload.name,
     email: payload.email,
+    userAvatar: payload.avatar !== undefined ? payload.avatar : state.userAvatar,
+  }),
+  updateUserAvatar: (state, { payload }) => ({
+    ...state,
+    userAvatar: payload.avatar,
   }),
   authStateChange: (state, { payload }) => ({ ...state, stateChange: payload.stateChange }),
   authSignOut: () => state,
