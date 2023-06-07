@@ -3,10 +3,6 @@ import { View, StyleSheet } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 
 const MapScreen = ({ route, navigation }) => {
-  // console.log('ROUTE MAP', route);
-  // console.log('ROUTE MAP', route.params.location.latitude);
-  // console.log('ROUTE MAP', route.params.location.longitude);
-
   const [location, setLocation] = useState({});
 
   useLayoutEffect(() => {
@@ -21,15 +17,6 @@ const MapScreen = ({ route, navigation }) => {
       });
     }
   }, [route.params]);
-
-  // console.log('latitude', typeof Number(location?.latitude));
-  // console.log('longitude', typeof Number(location?.longitude));
-  // console.log('latitude', location?.latitude);
-  // console.log('longitude', location?.longitude);
-  // console.log('latitude TYPE OF', typeof location?.latitude);
-  // console.log('longitude TYPE OF', typeof location?.longitude);
-  // console.log('latitude', location?.latitude);
-  // console.log('longitude', location?.longitude);
 
   return (
     <View style={styles.container}>
