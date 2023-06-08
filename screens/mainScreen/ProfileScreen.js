@@ -5,7 +5,6 @@ import {
   Image,
   Pressable,
   Text,
-  Alert,
   FlatList,
 } from 'react-native';
 import { StyleSheet } from 'react-native';
@@ -19,8 +18,6 @@ import { db } from '../../firebase/config';
 import { collection, query, onSnapshot, where, getDocs } from 'firebase/firestore';
 import { authSlice } from '../../redux/auth/authReducer';
 import { Avatar } from '../../components/Avatar';
-
-// import BtnLogOut from '../../components/BtnLogOut';
 
 const ProfileScreen = ({ route, navigation }) => {
   const [userPosts, setUserPosts] = useState([]);
@@ -63,13 +60,13 @@ const ProfileScreen = ({ route, navigation }) => {
         <View style={styles.container}>
           <Avatar />
           <Pressable style={styles.logoutBtn} onPress={signOut}>
-            <Icon name='log-out' size={24} color='#BDBDBD' />
+            <Icon name="log-out" size={24} color="#BDBDBD" />
           </Pressable>
           <Text style={styles.name}>{name}</Text>
 
-          {!userPosts && (
+          {userPosts?.length === 0 && (
             <View style={styles.emptyBox}>
-              <Text style={styles.noPosts}>У Вас немає постів</Text>
+              <Text style={styles.noPosts}>У Вас немає постів 😌</Text>
             </View>
           )}
 
@@ -92,20 +89,24 @@ const ProfileScreen = ({ route, navigation }) => {
                   <View style={styles.wrapperData}>
                     <View style={styles.feedbackWrapper}>
                       <Pressable
-                        onPress={() => navigation.navigate('Comments', { postId: item.id })}
+                        onPress={() => navigation.navigate('Comments', item)}
                         style={styles.feedback}
                       >
                         <Icon
-                          name='message-circle'
+                          name="message-circle"
                           size={24}
-                          color='#FF6C00'
+                          color={item.comments?.length > 0 ? '#FF6C00' : '#BDBDBD'}
                           style={{ transform: [{ rotate: '-90deg' }] }}
                         />
-                        <Text style={styles.feedbackCounter}>8</Text>
+                        <Text style={styles.feedbackCounter}>
+                          {item.comments ? item.comments?.length : 0}
+                        </Text>
                       </Pressable>
                       <Pressable style={styles.feedback}>
-                        <Icon name='thumbs-up' size={24} color='#FF6C00' />
-                        <Text style={styles.feedbackCounter}>153</Text>
+                        <Icon name="thumbs-up" size={24} color="#FF6C00" />
+                        <Text style={styles.feedbackCounter}>
+                          {item.likes ? item.likes?.length : 0}
+                        </Text>
                       </Pressable>
                     </View>
                     {/* <Pressable
@@ -116,7 +117,7 @@ const ProfileScreen = ({ route, navigation }) => {
                       onPress={() => navigation.navigate('Map', { location: item.location })}
                       style={styles.location}
                     >
-                      <Icon name='map-pin' size={24} color='#BDBDBD' />
+                      <Icon name="map-pin" size={24} color="#BDBDBD" />
                       <Text style={styles.locationTitle}>{item.position}</Text>
                     </Pressable>
                   </View>
@@ -153,9 +154,9 @@ const styles = StyleSheet.create({
   noPosts: {
     marginTop: -32,
     marginBottom: 32,
-    color: '#212121',
-    fontFamily: 'Roboto_500Medium',
-    fontSize: 30,
+    color: '#FF6C00',
+    fontFamily: 'Roboto_400Regular',
+    fontSize: 20,
     lineHeight: 35,
     textAlign: 'center',
   },
@@ -171,31 +172,6 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
   },
-  // avatar
-  // boxProfile: {
-  //   position: 'relative',
-  //   top: -60,
-  //   alignSelf: 'center',
-  //   width: 120,
-  //   height: 120,
-  //   backgroundColor: '#F6F6F6',
-  //   borderRadius: 16,
-  // },
-
-  // btnAdd: {
-  //   position: 'absolute',
-  //   display: 'flex',
-  //   justifyContent: 'center',
-  //   alignItems: 'center',
-  //   bottom: 12,
-  //   right: -12.5,
-  //   width: 25,
-  //   height: 25,
-  //   borderRadius: 50,
-  //   backgroundColor: '#FFFFFF',
-  //   borderWidth: 1,
-  //   borderStyle: 'solid',
-  // },
   // logOut
   logoutBtn: {
     position: 'absolute',
