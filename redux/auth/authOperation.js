@@ -11,9 +11,8 @@ import { authSlice } from './authReducer';
 const { updateUserProfile, authStateChange, updateUserAvatar, authSignOut } = authSlice.actions;
 
 export const authSignUpUser =
-  ({ email, password, name }) =>
+  ({ email, password, name, userAvatar }) =>
   async (dispatch, getState) => {
-    console.log('FORMDATA: ', email, password, name, userAvatar);
     try {
       await createUserWithEmailAndPassword(auth, email, password);
       const user = auth.currentUser;
@@ -53,20 +52,7 @@ export const authSignInUser =
   async (dispatch, getState) => {
     console.log('credential: ', email, password);
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-
-      const { uid, displayName } = user;
-      console.log(displayName, uid);
-
-      dispatch(
-        updateUserProfile({
-          userId: uid,
-          name: displayName,
-          userAvatar: user.photoURL,
-          email,
-        })
-      );
+      await signInWithEmailAndPassword(auth, email, password);
     } catch (error) {
       const errorCode = error.code;
 
@@ -97,7 +83,7 @@ export const authStateChangeUser = () => async (dispatch) => {
           userId: user.uid,
           name: user.displayName,
           email: user.email,
-          userAvatar: user.photoURL,
+          avatar: user.photoURL,
         };
 
         dispatch(authStateChange({ stateChange: true }));
@@ -111,15 +97,17 @@ export const authStateChangeUser = () => async (dispatch) => {
   });
 };
 
-export const changeAvatarUser = (processedAvatarURL) => async (dispatch, getState) => {
+export const changeAvatarUser = (newAvatarURL) => async (dispatch, getState) => {
+  // information about the current user
   const user = auth.currentUser;
-  // Check if this is 'Registration' or 'Profile'. If 'Registration', then user doesn't exist yet...
+  // Checks if the user exists: 'Registration' or 'Profile'. If the user variable is not null, then the user already exists.  If 'Registration', then user doesn't exist yet...
   if (user !== null) {
     await updateProfile(user, {
-      photoURL: processedAvatarURL,
+      photoURL: newAvatarURL,
     });
   }
-  dispatch(updateUserAvatar({ avatar: processedAvatarURL }));
+  // dispatches the updateUserAvatar action with an object containing the updated avatar: processedAvatarURL to the Redux store using the dispatch function
+  dispatch(updateUserAvatar({ avatar: newAvatarURL }));
 };
 
 export const authSignOutUser = () => async (dispatch, getState) => {
