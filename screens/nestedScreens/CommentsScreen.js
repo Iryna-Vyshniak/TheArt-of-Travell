@@ -1,7 +1,6 @@
 import { useEffect, useLayoutEffect, useState } from 'react';
 import {
   Alert,
-  ScrollView,
   SafeAreaView,
   View,
   Image,
@@ -19,60 +18,36 @@ import { useSelector } from 'react-redux';
 import { db } from '../../firebase/config';
 import { collection, doc, addDoc, onSnapshot, updateDoc } from 'firebase/firestore';
 
-const data = [
-  {
-    id: '1',
-    avatar:
-      'https://images.unsplash.com/photo-1685016725413-454a50708d58?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1287&q=80',
-    name: 'Jason',
-    text: 'Really love your most recent photo. I’ve been trying to capture the same thing for a few months and would love some tips!',
-    date: '04 june 2023 | 08:40',
-  },
-  {
-    id: '2',
-    avatar:
-      'https://images.unsplash.com/photo-1684932815774-f32dfa457f85?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1287&q=80',
-    name: 'Laura',
-    text: 'A fast 50mm like f1.8 would help with the bokeh. I’ve been using primes as they tend to get a bit sharper images.',
-    date: '04 june 2023 | 09:14',
-  },
-  {
-    id: '3',
-    avatar:
-      'https://images.unsplash.com/photo-1682857203811-3141bf2ba486?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1287&q=80',
-    name: 'Harry',
-    text: 'Thank you! That was very helpful!',
-    date: '05 june 2023 | 09:40',
-  },
-  {
-    id: '4',
-    avatar: '',
-    name: 'Kelly',
-    text: 'Thank you!',
-    date: '07 june 2023 | 09:40',
-  },
-];
-
 const CommentsScreen = ({ navigation, route }) => {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [focused, setFocused] = useState('');
   const [comment, setComment] = useState('');
   const [comments, setComments] = useState([]);
 
-  const { name, avatarImage } = useSelector((state) => state.auth);
-  const { postId } = route.params;
+  const { name, userAvatar, email, userId } = useSelector((state) => state.auth);
+  const { id: postId, photo, userId: postOwnerId } = route.params;
 
-  const createCommment = async () => {
+  // create comment
+  const createComment = async () => {
     const date = new Date().toLocaleDateString();
     const time = new Date().toLocaleTimeString();
 
     const postDocRef = await doc(db, 'posts', postId);
-    await addDoc(collection(postDocRef, 'comments'), {
+    const newComment = {
       comment,
       name,
+      email,
+      userAvatar,
       date,
       time,
-      commentAvatar: avatarImage,
+      owner: userId === postOwnerId ? 'user' : 'follower',
+    };
+
+    console.log(userId + '===' + postOwnerId);
+
+    await addDoc(collection(postDocRef, 'comments'), newComment);
+    await updateDoc(postDocRef, {
+      comments: [...comments, newComment],
     });
   };
 
@@ -84,27 +59,40 @@ const CommentsScreen = ({ navigation, route }) => {
     );
   };
 
+  // hide keyboard
   const keyboardHide = () => {
     setIsShowKeyboard(false);
     Keyboard.dismiss();
   };
 
+  // add own header and hide tab bottom
   useLayoutEffect(() => {
-    navigation.setOptions({ title: 'Коментарі', tabBarStyle: { display: 'none' } });
+    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } });
+    navigation.setOptions({ title: 'Коментарі' });
+    return () => {
+      navigation.getParent().setOptions({
+        tabBarStyle: {
+          display: 'flex',
+          height: 83,
+          paddingTop: 9,
+          boxShadow: '0px -0.5px 0px rgba(0, 0, 0, 0.3)',
+        },
+      });
+    };
   }, [navigation]);
 
+  // get all comments
   useEffect(() => {
     getAllComments();
-  }, []);
+  }, [userId, postId]);
 
   // send comment
-
   const handleSendComment = () => {
     if (!comment.trim()) {
       Alert.alert(`Будь ласка, введіть свій коментар 😌`);
       return;
     }
-    createCommment();
+    createComment();
     Keyboard.dismiss();
     Alert.alert(`Ваш коментар успішно надіслано 😉`);
     setComment('');
@@ -119,7 +107,7 @@ const CommentsScreen = ({ navigation, route }) => {
               <Image
                 style={styles.postImage}
                 source={{
-                  uri: 'https://images.unsplash.com/photo-1592859600972-1b0834d83747?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80',
+                  uri: photo,
                 }}
               />
             </View>
@@ -128,10 +116,15 @@ const CommentsScreen = ({ navigation, route }) => {
               data={comments}
               keyExtractor={(item) => item.id.toString()}
               renderItem={({ item }) => (
-                <View style={styles.wrapper}>
+                <View
+                  style={{
+                    ...styles.wrapper,
+                    flexDirection: item?.owner === 'user' ? 'row-reverse' : 'row',
+                  }}
+                >
                   <View>
-                    {item.avatar ? (
-                      <Image style={styles.avatar} source={{ uri: item.avatar }} />
+                    {item.userAvatar ? (
+                      <Image style={styles.avatar} source={{ uri: item.userAvatar }} />
                     ) : (
                       <Image
                         style={styles.avatar}
@@ -160,10 +153,11 @@ const CommentsScreen = ({ navigation, route }) => {
       <View style={styles.inputContainer}>
         <TextInput
           style={{ ...styles.input, borderColor: focused === 'comment' ? '#FF6C00' : '#E8E8E8' }}
-          selectionColor='#FF6C00'
+          multiline={true}
+          selectionColor="#FF6C00"
           blurOnSubmit={true}
-          placeholderTextColor='#BDBDBD'
-          placeholder='Comment...'
+          placeholderTextColor="#BDBDBD"
+          placeholder="Comment..."
           value={comment}
           onChangeText={(value) => setComment(value)}
           onBlur={() => {
@@ -176,7 +170,7 @@ const CommentsScreen = ({ navigation, route }) => {
           }}
         />
         <TouchableOpacity style={styles.sendBtn} onPress={handleSendComment}>
-          <Feather name='arrow-up' size={24} color='#FFFFFF' />
+          <Feather name="arrow-up" size={24} color="#FFFFFF" />
         </TouchableOpacity>
       </View>
     </View>
@@ -204,8 +198,13 @@ const styles = StyleSheet.create({
     height: 240,
     borderRadius: 8,
   },
-  wrapper: { flexDirection: 'row', alignItems: 'center' },
-  avatar: { width: 28, height: 28, marginRight: 5, borderRadius: 50 },
+  wrapper: { flexDirection: 'row', alignItems: 'baseline', marginTop: 24 },
+  avatar: {
+    width: 28,
+    height: 28,
+    marginRight: 5,
+    borderRadius: 50,
+  },
   userName: { marginBottom: 10 },
   innerCommentsWrapper: {
     display: 'flex',
@@ -227,6 +226,7 @@ const styles = StyleSheet.create({
 
     fontSize: 16,
     lineHeight: 19,
+    textAlignVertical: 'top',
 
     color: '#212121',
     backgroundColor: '#F6F6F6',
