@@ -4,13 +4,11 @@ import useRoute from '../router';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { authStateChangeUser } from '../redux/auth/authOperation';
-//import useRoute from '../routerAsDesign';
 
 const Main = () => {
   const dispatch = useDispatch();
 
   const { stateChange } = useSelector((state) => state.auth);
-  console.log('STATE: ', stateChange);
 
   useEffect(() => {
     dispatch(authStateChangeUser());
