@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { changeAvatarUser } from '../redux/auth/authOperation';
 import Icon from '@expo/vector-icons/Feather';
 import { useState } from 'react';
+import { uploadPhotoToServer } from '../shared/uploadPhoto';
 
 export const Avatar = () => {
   const { userAvatar } = useSelector((state) => state.auth);
@@ -14,6 +15,13 @@ export const Avatar = () => {
   const dispatch = useDispatch();
 
   const avatarAddHandler = async () => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (permissionResult.granted === false) {
+      alert('Ви відмовилися дозволити цій програмі доступ до ваших фотографій');
+      return;
+    }
+
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
@@ -24,27 +32,11 @@ export const Avatar = () => {
     if (!result.canceled) {
       setAvatar(result.assets[0].uri);
 
-      const avatarURL = await uploadImageToStorage(result.assets[0].uri);
-
+      const avatarURL = await uploadPhotoToServer(result.assets[0].uri);
+      console.log('AVATAR', avatarURL);
       dispatch(changeAvatarUser(avatarURL));
     }
   };
-
-  async function uploadImageToStorage(image) {
-    const avId = Date.now().toString();
-    const path = `avatars/${avId}.jpeg`;
-
-    const response = await fetch(image);
-    const file = await response.blob();
-
-    const avatarsRef = ref(storage, path);
-
-    await uploadBytes(avatarsRef, file);
-
-    const imageURL = await getDownloadURL(ref(storage, avatarsRef));
-
-    return imageURL;
-  }
 
   const avatarDeleteHandler = () => {
     setAvatar(null);
@@ -63,10 +55,10 @@ export const Avatar = () => {
         accessibilityLabel={userAvatar ? 'Remove Avatar' : 'Add Avatar'}
         style={{
           ...styles.btnAdd,
-          borderColor: !avatar ? '#E8E8E8' : '#FF6C00',
+          borderColor: avatar ? '#E8E8E8' : '#FF6C00',
         }}
       >
-        {!avatar ? (
+        {avatar ? (
           <Icon
             name='plus'
             size={20}
