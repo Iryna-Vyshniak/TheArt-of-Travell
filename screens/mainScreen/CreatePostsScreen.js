@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Camera, CameraType } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
+import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
 import { db, storage } from '../../firebase/config';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
@@ -47,6 +48,8 @@ const CreatePostsScreen = ({ navigation }) => {
   const { image, title, position } = post;
   const { userId, name } = useSelector((state) => state.auth);
 
+
+  // get permissions to take photo and get location
   useEffect(() => {
     (async () => {
       const cameraStatus = await Camera.requestCameraPermissionsAsync();
@@ -65,8 +68,8 @@ const CreatePostsScreen = ({ navigation }) => {
     })();
   }, []);
 
-  //console.log('cameraStatus', permission);
 
+  // disabled buttons to publish post
   useEffect(() => {
     if (image && title && position) {
       setDisabled(false);
@@ -92,6 +95,29 @@ const CreatePostsScreen = ({ navigation }) => {
       Vibration.vibrate();
       getLocation();
       setPost((prevState) => ({ ...prevState, image: uri }));
+    }
+  };
+
+  // get photo from gallery
+  const takePhotoGallery = async () => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (permissionResult.granted === false) {
+      alert(
+        'Ви відмовилися дозволити цій програмі доступ до ваших фотографій, щоб відредагувати фото'
+      );
+      return;
+    }
+
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setPost((prevState) => ({ ...prevState, image: result.assets[0].uri }));
     }
   };
 
@@ -141,19 +167,23 @@ const CreatePostsScreen = ({ navigation }) => {
     }
   };
 
+  // hide keyboard
   const keyboardHide = () => {
     setKeyboardStatus(false);
     Keyboard.dismiss();
   };
 
+  // back or front camera
   const toggleCameraType = () => {
     setType((current) => (current === CameraType.back ? CameraType.front : CameraType.back));
   };
 
+  // reset form post
   const resetFormPost = () => {
     setPost(initialPost);
   };
 
+  // submit post
   const handlePublishedPost = () => {
     uploadPostToServer();
     navigation.navigate('PostsDefault', { ...post });
@@ -162,6 +192,7 @@ const CreatePostsScreen = ({ navigation }) => {
     setDisabled(true);
   };
 
+  // permissinons for camera
   if (!permission) {
     return <View />;
   }
@@ -184,14 +215,14 @@ const CreatePostsScreen = ({ navigation }) => {
               <View style={styles.addImageContainer}>
                 <Image source={{ uri: image }} style={styles.image} />
                 <Pressable
-                  onPress={takePhoto}
+                  onPress={takePhotoGallery}
                   accessibilityLabel={'Change picture'}
                   style={{
                     ...styles.addImageBtn,
                     backgroundColor: 'rgba(255, 255, 255, 0.3)',
                   }}
                 >
-                  <Feather name='camera' size={24} color={'#FFFFFF'} />
+                  <Feather name="camera" size={24} color={'#FFFFFF'} />
                 </Pressable>
               </View>
             ) : (
@@ -201,16 +232,10 @@ const CreatePostsScreen = ({ navigation }) => {
                   setCamera(ref);
                 }}
                 type={type}
-                ratio='1:1'
+                ratio="1:1"
               >
                 <Pressable
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    right: 0,
-                    flex: 0.1,
-                    alignSelf: 'flex-end',
-                  }}
+                  style={styles.toggleCamera}
                   onPress={toggleCameraType}
                 >
                   <Text style={{ color: '#fff' }}>Flip Camera</Text>
@@ -223,7 +248,7 @@ const CreatePostsScreen = ({ navigation }) => {
                     backgroundColor: '#ffffff',
                   }}
                 >
-                  <Feather name='camera' size={24} color={'#BDBDBD'} />
+                  <Feather name="camera" size={24} color={'#BDBDBD'} />
                 </Pressable>
               </Camera>
             )}
@@ -236,10 +261,10 @@ const CreatePostsScreen = ({ navigation }) => {
 
           <View style={{ ...styles.inputWrapper, marginBottom: 16 }}>
             <TextInput
-              id='title'
+              id="title"
               value={title}
-              placeholder='Назва...'
-              placeholderTextColor='#BDBDBD'
+              placeholder="Назва..."
+              placeholderTextColor="#BDBDBD"
               selectionColor={'#FF6C00'}
               onFocus={() => {
                 setKeyboardStatus(true);
@@ -256,12 +281,12 @@ const CreatePostsScreen = ({ navigation }) => {
             />
           </View>
           <View style={styles.inputWrapper}>
-            <Feather name='map-pin' size={24} color='#BDBDBD' />
+            <Feather name="map-pin" size={24} color="#BDBDBD" />
             <TextInput
-              id='position'
+              id="position"
               value={position}
-              placeholder='Місцевість...'
-              placeholderTextColor='#BDBDBD'
+              placeholder="Місцевість..."
+              placeholderTextColor="#BDBDBD"
               selectionColor={'#FF6C00'}
               onFocus={() => {
                 setKeyboardStatus(true);
@@ -291,7 +316,7 @@ const CreatePostsScreen = ({ navigation }) => {
             </TouchableOpacity>
           </View>
           <TouchableOpacity style={styles.deleteBtn} onPress={resetFormPost}>
-            <Feather name='trash-2' size={24} color='#BDBDBD' />
+            <Feather name="trash-2" size={24} color="#BDBDBD" />
           </TouchableOpacity>
         </KeyboardAvoidingView>
       </SafeAreaView>
@@ -350,7 +375,6 @@ const styles = StyleSheet.create({
   },
   addImageBtn: {
     position: 'absolute',
-    //transform: [{ translateX: 155 }, { translateY: 90 }],
     padding: 18,
     borderRadius: 50,
   },
@@ -363,6 +387,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 19,
     textAlign: 'left',
+  },
+  toggleCamera: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    flex: 0.1,
+    alignSelf: 'flex-end',
   },
   // input
   inputWrapper: {
@@ -423,4 +454,3 @@ const styles = StyleSheet.create({
   },
 });
 
-// <Feather name="arrow-up" size={24} color="#FFFFFF" />
