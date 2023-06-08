@@ -38,6 +38,7 @@ const LoginScreen = ({ navigation }) => {
 
   const dispatch = useDispatch();
 
+  // change orientation
   useEffect(() => {
     const onChange = ({ window }) => {
       const windowWidth = window.width - 8 * 2;
@@ -51,10 +52,13 @@ const LoginScreen = ({ navigation }) => {
 
   const isPortrait = dimensions.windowWidth < dimensions.windowHeight;
 
+  // hide and show password
   function togglePassword() {
     setShowPassword((prevState) => !prevState);
   }
 
+
+// check validate email, password
   const validateEmail = (str) => {
     const emailRegex =
       /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -78,11 +82,15 @@ const LoginScreen = ({ navigation }) => {
     return navigation.navigate('Home', { screen: 'Home' });
   };
 
+
+  // hide keyboard
   const keyboardHide = () => {
     setKeyboardStatus(false);
     Keyboard.dismiss();
   };
 
+
+  // submit
   const handleSubmit = () => {
     checkTextInput();
     keyboardHide();
@@ -110,7 +118,7 @@ const LoginScreen = ({ navigation }) => {
               <Text style={styles.title}>Увійти</Text>
               <View style={styles.form}>
                 <TextInput
-                  id='email'
+                  //id='email'
                   value={email}
                   onChangeText={(value) =>
                     setFormData((prevState) => ({ ...prevState, email: value }))
@@ -136,7 +144,7 @@ const LoginScreen = ({ navigation }) => {
                 <View style={styles.passwordContainer}>
                   <TextInput
                     type={showPassword ? 'text' : 'password'}
-                    id='password'
+                   // id='password'
                     value={password}
                     onChangeText={(value) =>
                       setFormData((prevState) => ({ ...prevState, password: value }))
@@ -171,7 +179,6 @@ const LoginScreen = ({ navigation }) => {
                   <Text style={styles.BtnText}>Увійти</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  // title='Go to register'
                   onPress={() => navigation.navigate('Register')}
                   activeOpacity={0.7}
                   style={styles.wrapper}
