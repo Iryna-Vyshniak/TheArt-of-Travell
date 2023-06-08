@@ -1,3 +1,5 @@
+import * as ImagePicker from 'expo-image-picker';
+import Icon from '@expo/vector-icons/Feather';
 import {
   SafeAreaView,
   ImageBackground,
@@ -11,6 +13,8 @@ import {
   Alert,
   Platform,
   Dimensions,
+  Pressable,
+  Image,
 } from 'react-native';
 import { StyleSheet } from 'react-native';
 import Bg from '../../assets/login-bg.jpg';
@@ -18,7 +22,7 @@ import { useState, useEffect } from 'react';
 
 import { useDispatch } from 'react-redux';
 import { authSignUpUser } from '../../redux/auth/authOperation';
-import { Avatar } from '../../components/Avatar';
+import { uploadPhotoToServer } from '../../shared/uploadPhoto';
 
 const RegistrationScreen = ({ navigation }) => {
   // orientation change
@@ -32,10 +36,11 @@ const RegistrationScreen = ({ navigation }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ photo: '', name: '', email: '', password: '' });
 
-  const { name, email, password } = formData;
+  const { name, email, password, photo } = formData;
 
   const dispatch = useDispatch();
 
+  // change orientation
   useEffect(() => {
     const onChange = ({ window }) => {
       const windowWidth = window.width - 8 * 2;
@@ -49,15 +54,12 @@ const RegistrationScreen = ({ navigation }) => {
 
   const isPortrait = dimensions.windowWidth < dimensions.windowHeight;
 
+  // show and hide password
   function togglePassword() {
     setShowPassword((prevState) => !prevState);
   }
 
-  const validateLogin = (str) => {
-    const loginRegex = /^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$/;
-    return loginRegex.test(str);
-  };
-
+  // check validate email, name and password
   const validateEmail = (str) => {
     const emailRegex =
       /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -67,14 +69,6 @@ const RegistrationScreen = ({ navigation }) => {
   const checkTextInput = () => {
     if (!name.trim()) {
       Alert.alert('Warning', 'Login is required. Please write your login');
-      return;
-    }
-
-    if (!validateLogin(name)) {
-      Alert.alert(
-        'Warning',
-        'Please write valid login. Login may contain only letters, apostrophe, dash and spaces'
-      );
       return;
     }
 
@@ -93,25 +87,59 @@ const RegistrationScreen = ({ navigation }) => {
     return navigation.navigate('Home', { screen: 'Home' });
   };
 
+  // hide keyboard
   const keyboardHide = () => {
     setKeyboardStatus(false);
     Keyboard.dismiss();
   };
 
-  const handleSubmit = () => {
+  // add avatar
+  const handleAddAvatar = async () => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (permissionResult.granted === false) {
+      alert('Ви відмовилися дозволити цій програмі доступ до ваших фотографій');
+      return;
+    }
+
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setFormData((prev) => ({ ...prev, photo: result.assets[0].uri }));
+    }
+  };
+
+  // remove avatar
+  const handleRemoveAvatar = () => {
+    setFormData((prev) => ({ ...prev, photo: '' }));
+  };
+
+  // submit
+  const handleSubmit = async () => {
     checkTextInput();
     keyboardHide();
     setShowPassword(false);
+    const imageRef = await uploadPhotoToServer(photo);
+    const newUser = {
+      userAvatar: imageRef,
+      name,
+      email,
+      password,
+    };
 
-    dispatch(authSignUpUser(formData));
-    setFormData({ name: '', email: '', password: '' });
-    //navigation.navigate('Home', { screen: 'Posts' });
+    dispatch(authSignUpUser(newUser));
+    setFormData({ name: '', email: '', password: '', photo: '' });
   };
 
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
       <SafeAreaView style={styles.mainContainer}>
-        <ImageBackground source={Bg} resizeMode='cover' style={styles.image}>
+        <ImageBackground source={Bg} resizeMode="cover" style={styles.image}>
           <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             style={styles.keyboard}
@@ -126,7 +154,32 @@ const RegistrationScreen = ({ navigation }) => {
                 // maxHeight: isPortrait ? dimensions.windowHeight * 0.61 : '100%',
               }}
             >
-              <Avatar />
+              {/*  <Avatar /> */}
+              <View style={styles.box}>
+                <Image
+                  style={styles.avatar}
+                  source={photo ? { uri: photo } : require('../../assets/avatar.png')}
+                />
+                <Pressable
+                  onPress={photo ? handleRemoveAvatar : handleAddAvatar}
+                  accessibilityLabel={photo ? 'Remove Avatar' : 'Add Avatar'}
+                  style={{
+                    ...styles.btnAdd,
+                    borderColor: photo ? '#E8E8E8' : '#FF6C00',
+                  }}
+                >
+                  {photo ? (
+                    <Icon
+                      name="plus"
+                      size={20}
+                      color="#E8E8E8"
+                      style={{ transform: [{ rotate: '-45deg' }] }}
+                    />
+                  ) : (
+                    <Icon name="plus" size={20} color="#FF6C00" />
+                  )}
+                </Pressable>
+              </View>
               <Text
                 style={{
                   ...styles.title,
@@ -140,14 +193,14 @@ const RegistrationScreen = ({ navigation }) => {
                 style={{ ...styles.form, width: dimensions.windowWidth, gap: isPortrait ? 16 : 8 }}
               >
                 <TextInput
-                  id='name'
+                  // id="name"
                   value={name}
                   onChangeText={(value) =>
                     setFormData((prevState) => ({ ...prevState, name: value.trim() }))
                   }
-                  placeholder='Логін'
-                  placeholderTextColor='#BDBDBD'
-                  autoCapitalize='none'
+                  placeholder="Логін"
+                  placeholderTextColor="#BDBDBD"
+                  autoCapitalize="none"
                   selectionColor={'#FF6C00'}
                   onFocus={() => {
                     setKeyboardStatus(true);
@@ -162,15 +215,15 @@ const RegistrationScreen = ({ navigation }) => {
                   }}
                 />
                 <TextInput
-                  id='email'
+                  // id="email"
                   value={email}
                   onChangeText={(value) =>
                     setFormData((prevState) => ({ ...prevState, email: value.trim() }))
                   }
-                  placeholder='Адреса електронної пошти'
-                  placeholderTextColor='#BDBDBD'
-                  keyboardType='email-address'
-                  autoCapitalize='none'
+                  placeholder="Адреса електронної пошти"
+                  placeholderTextColor="#BDBDBD"
+                  keyboardType="email-address"
+                  autoCapitalize="none"
                   selectionColor={'#FF6C00'}
                   onFocus={() => {
                     setKeyboardStatus(true);
@@ -187,15 +240,15 @@ const RegistrationScreen = ({ navigation }) => {
                 <View style={{ ...styles.passwordContainer, marginBottom: isPortrait ? 43 : 8 }}>
                   <TextInput
                     type={showPassword ? 'text' : 'password'}
-                    id='password'
+                    //id="password"
                     value={password}
                     onChangeText={(value) =>
                       setFormData((prevState) => ({ ...prevState, password: value.trim() }))
                     }
-                    placeholder='Пароль'
-                    placeholderTextColor='#BDBDBD'
+                    placeholder="Пароль"
+                    placeholderTextColor="#BDBDBD"
                     secureTextEntry={!showPassword}
-                    autoCapitalize='none'
+                    autoCapitalize="none"
                     selectionColor={'#FF6C00'}
                     onFocus={() => {
                       setKeyboardStatus(true);
@@ -221,7 +274,6 @@ const RegistrationScreen = ({ navigation }) => {
                   <Text style={styles.BtnText}>Увійти</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  // title='Go to login'
                   onPress={() => navigation.navigate('Login')}
                   activeOpacity={0.7}
                   style={styles.wrapper}
@@ -294,6 +346,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderStyle: 'solid',
+  },
+
+  avatar: {
+    borderRadius: 16,
+    backgroundColor: '#F6F6F6',
+
+    width: 120,
+    height: 120,
   },
 
   title: {
