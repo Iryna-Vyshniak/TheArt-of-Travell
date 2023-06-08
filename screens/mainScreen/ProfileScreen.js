@@ -17,14 +17,17 @@ import { useDispatch, useSelector } from 'react-redux';
 import { authSignOutUser } from '../../redux/auth/authOperation';
 import { db } from '../../firebase/config';
 import { collection, query, onSnapshot, where, getDocs } from 'firebase/firestore';
+import { authSlice } from '../../redux/auth/authReducer';
+import { Avatar } from '../../components/Avatar';
 
 // import BtnLogOut from '../../components/BtnLogOut';
 
-const ProfileScreen = ({ navigation }) => {
-  const [userAvatar, setUserAvatar] = useState(null);
-
+const ProfileScreen = ({ route, navigation }) => {
   const [userPosts, setUserPosts] = useState([]);
-  const { userId, name, avatarImage } = useSelector((state) => state.auth);
+  const [likesCount, setLikesCount] = useState(0);
+  const { userId, name, userAvatar, email } = useSelector((state) => state.auth);
+
+  const { updateUserProfile } = authSlice.actions;
 
   const getUserPosts = async () => {
     try {
@@ -40,17 +43,15 @@ const ProfileScreen = ({ navigation }) => {
 
   useEffect(() => {
     getUserPosts();
-  }, []);
+    if (route.params?.commentsCount) {
+      setCommentsCount((prevCount) => ({
+        ...prevCount,
+        [route.params.postId]: route.params.commentsCount,
+      }));
+    }
+  }, [route.params]);
 
   const dispatch = useDispatch();
-
-  const handleAddAvatar = () => {
-    setUserAvatar(require('../../assets/avatar.png'));
-  };
-
-  const handleRemoveAvatar = () => {
-    setUserAvatar(null);
-  };
 
   const signOut = () => {
     dispatch(authSignOutUser());
@@ -60,30 +61,7 @@ const ProfileScreen = ({ navigation }) => {
     <SafeAreaView style={styles.mainContainer}>
       <ImageBackground source={Bg} style={styles.imageBg}>
         <View style={styles.container}>
-          <View style={styles.boxProfile}>
-            {userAvatar ? (
-              <Image source={require('../../assets/avatar.png')} style={styles.avatarImage} />
-            ) : null}
-            <Pressable
-              onPress={userAvatar ? handleRemoveAvatar : handleAddAvatar}
-              accessibilityLabel={userAvatar ? 'Remove Avatar' : 'Add Avatar'}
-              style={{
-                ...styles.btnAdd,
-                borderColor: userAvatar ? '#E8E8E8' : '#FF6C00',
-              }}
-            >
-              {userAvatar ? (
-                <Icon
-                  name='plus'
-                  size={20}
-                  color='#E8E8E8'
-                  style={{ transform: [{ rotate: '-45deg' }] }}
-                />
-              ) : (
-                <Icon name='plus' size={20} color='#FF6C00' />
-              )}
-            </Pressable>
-          </View>
+          <Avatar />
           <Pressable style={styles.logoutBtn} onPress={signOut}>
             <Icon name='log-out' size={24} color='#BDBDBD' />
           </Pressable>
@@ -194,30 +172,30 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 25,
   },
   // avatar
-  boxProfile: {
-    position: 'relative',
-    top: -60,
-    alignSelf: 'center',
-    width: 120,
-    height: 120,
-    backgroundColor: '#F6F6F6',
-    borderRadius: 16,
-  },
+  // boxProfile: {
+  //   position: 'relative',
+  //   top: -60,
+  //   alignSelf: 'center',
+  //   width: 120,
+  //   height: 120,
+  //   backgroundColor: '#F6F6F6',
+  //   borderRadius: 16,
+  // },
 
-  btnAdd: {
-    position: 'absolute',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    bottom: 12,
-    right: -12.5,
-    width: 25,
-    height: 25,
-    borderRadius: 50,
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderStyle: 'solid',
-  },
+  // btnAdd: {
+  //   position: 'absolute',
+  //   display: 'flex',
+  //   justifyContent: 'center',
+  //   alignItems: 'center',
+  //   bottom: 12,
+  //   right: -12.5,
+  //   width: 25,
+  //   height: 25,
+  //   borderRadius: 50,
+  //   backgroundColor: '#FFFFFF',
+  //   borderWidth: 1,
+  //   borderStyle: 'solid',
+  // },
   // logOut
   logoutBtn: {
     position: 'absolute',
