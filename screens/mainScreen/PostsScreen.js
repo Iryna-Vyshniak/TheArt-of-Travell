@@ -10,13 +10,7 @@ import { useDispatch } from 'react-redux';
 
 const NestedStack = createStackNavigator();
 
-//TODO: the functionality doesn`t matches the design of the layout
-
 const PostsScreen = ({ navigation, route }) => {
-  if (route.state && route.state.index > 0) {
-    navigation.setOptions({ tabBarVisible: false });
-  } else ({ tabBarVisible: true });
-
   const dispatch = useDispatch();
 
   const signOut = () => {
@@ -26,7 +20,7 @@ const PostsScreen = ({ navigation, route }) => {
   return (
     <NestedStack.Navigator>
       <NestedStack.Screen
-        name='PostsDefault'
+        name="PostsDefault"
         component={DefaultPostsScreen}
         options={{
           headerLeft: null,
@@ -37,24 +31,24 @@ const PostsScreen = ({ navigation, route }) => {
           headerTitleAlign: 'center',
           headerRight: () => (
             <TouchableOpacity onPress={signOut}>
-              <Feather name='log-out' size={24} color='#BDBDBD' />
+              <Feather name="log-out" size={24} color="#BDBDBD" />
             </TouchableOpacity>
           ),
         }}
       />
       <NestedStack.Screen
-        name='Comments'
+        name="Comments"
         component={CommentsScreen}
-        options={{
+        options={({ navigation, route }) => ({
           headerStyle: styles.headerBox,
           headerRightContainerStyle: { paddingRight: 16 },
           headerLeftContainerStyle: { paddingLeft: 16 },
           headerTitleStyle: styles.headerTitle,
           headerTitleAlign: 'center',
-        }}
+        })}
       />
       <NestedStack.Screen
-        name='Map'
+        name="Map"
         component={MapScreen}
         options={{
           headerStyle: styles.headerBox,
@@ -91,54 +85,3 @@ const styles = StyleSheet.create({
     letterSpacing: -0.408,
   },
 });
-
-//TODO: the functionality match the design of the layout
-
-// const PostsScreen = ({ navigation, route }) => {
-//   if (route.state && route.state.index > 0) {
-//     navigation.setOptions({ tabBarVisible: false });
-//   } else ({ tabBarVisible: true });
-
-//   return (
-//     <NestedStack.Navigator>
-//       <NestedStack.Screen
-//         name='PostsDefault'
-//         component={DefaultPostsScreen}
-//         options={{ headerShown: false }}
-//         unmountOnBlur={true}
-//       />
-//       <NestedStack.Screen
-//         name='Comments'
-//         component={CommentsScreen}
-//         options={{
-//           title: 'Коментарі',
-//           headerLeft: () => (
-//             <TouchableOpacity
-//               onPress={() => navigation.reset({ index: 0, routes: [{ name: 'Home' }] })}
-//             >
-//               <Feather name='arrow-left' size={24} color='#212121' style={{ marginLeft: 16 }} />
-//             </TouchableOpacity>
-//           ),
-//         }}
-//         unmountOnBlur={true}
-//       />
-//       <NestedStack.Screen
-//         name='Map'
-//         component={MapScreen}
-//         options={{
-//           title: 'Мапа',
-//           headerLeft: () => (
-//             <TouchableOpacity
-//              onPress={() => navigation.reset({ index: 0, routes: [{ name: 'Home' }] })}
-//             >
-//               <Feather name='arrow-left' size={24} color='#212121' style={{ marginLeft: 16 }} />
-//             </TouchableOpacity>
-//           ),
-//         }}
-//         unmountOnBlur={true}
-//       />
-//     </NestedStack.Navigator>
-//   );
-// };
-
-// export default PostsScreen;
