@@ -8,10 +8,13 @@ import { useSelector } from 'react-redux';
 const DefaultPostsScreen = ({ route, navigation }) => {
   const [userPosts, setUserPosts] = useState([]);
 
-  const { name, email, avatarImage } = useSelector((state) => state.auth);
+  const { name, email, userAvatar } = useSelector((state) => state.auth);
 
+  //console.log(userAvatar);
+
+  // add header
   useLayoutEffect(() => {
-    navigation.setOptions({ title: 'Публікації' });
+    navigation.setOptions({ title: 'Публікації', tabBarStyle: { display: 'flex' } });
   }, [navigation]);
 
   // get all posts from server
@@ -22,39 +25,38 @@ const DefaultPostsScreen = ({ route, navigation }) => {
     });
   };
 
+  // get all posts
   useEffect(() => {
     getAllPosts();
   }, []);
 
   return (
     <SafeAreaView style={styles.container}>
+      <Pressable
+        onPress={() => navigation.navigate('Profile', { screen: 'ProfileScreen' })}
+        style={styles.userInfo}
+      >
+        <Image
+          source={{ uri: userAvatar }}
+          resizeMode="cover"
+          style={{ width: 60, height: 60, borderRadius: 16, marginRight: 8 }}
+        />
+        <View>
+          <Text style={styles.userName}>{name}</Text>
+          <Text>{email}</Text>
+        </View>
+      </Pressable>
       <FlatList
         showsVerticalScrollIndicator={false}
         data={userPosts}
         keyExtractor={(_, idx) => idx.toString()}
         renderItem={({ item }) => (
           <>
-            <Pressable
-              onPress={() => navigation.navigate('Profile', { screen: 'ProfileScreen' })}
-              style={styles.userInfo}
-            >
-              <Image
-                source={require('../../assets/avatar.png')}
-                resizeMode='cover'
-                style={{ width: 60, height: 60, borderRadius: 16, marginRight: 8 }}
-              />
-              <View>
-                <Text style={styles.userName}>{name}</Text>
-                <Text>{email}</Text>
-              </View>
-            </Pressable>
-
             <View style={styles.card}>
               <View style={styles.imageThumb}>
                 <Image
                   source={{
                     uri: `${item.photo}`,
-                    // uri: 'https://images.unsplash.com/photo-1592859600972-1b0834d83747?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80',
                   }}
                   style={{ ...styles.picture, width: 343, height: 240 }}
                 />
@@ -64,22 +66,24 @@ const DefaultPostsScreen = ({ route, navigation }) => {
                 <View style={styles.feedbackWrapper}>
                   <Pressable
                     style={styles.feedback}
-                    onPress={() => navigation.navigate('Comments', { postId: item.id })}
+                    onPress={() => navigation.navigate('Comments', item)}
                   >
                     <Icon
-                      name='message-circle'
+                      name="message-circle"
                       size={24}
-                      color='#BDBDBD'
+                      color="#BDBDBD"
                       style={{ transform: [{ rotate: '-90deg' }] }}
                     />
-                    <Text style={styles.feedbackCounter}>0</Text>
+                    <Text style={styles.feedbackCounter}>
+                      {item.comments ? item.comments.length : 0}
+                    </Text>
                   </Pressable>
                 </View>
                 <Pressable
                   style={styles.location}
                   onPress={() => navigation.navigate('Map', { location: item.location })}
                 >
-                  <Icon name='map-pin' size={24} color='#BDBDBD' />
+                  <Icon name="map-pin" size={24} color="#BDBDBD" />
                   <Text style={styles.locationTitle}>{item.position}</Text>
                 </Pressable>
               </View>
