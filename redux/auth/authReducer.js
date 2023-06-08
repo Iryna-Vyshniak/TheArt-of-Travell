@@ -14,7 +14,7 @@ const actions = {
     userId: payload.userId,
     name: payload.name,
     email: payload.email,
-    userAvatar: payload.avatar !== undefined ? payload.avatar : state.userAvatar,
+    userAvatar: payload.avatar,
   }),
   updateUserAvatar: (state, { payload }) => ({
     ...state,
