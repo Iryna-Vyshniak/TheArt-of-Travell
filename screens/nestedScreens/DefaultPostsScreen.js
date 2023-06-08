@@ -71,11 +71,16 @@ const DefaultPostsScreen = ({ route, navigation }) => {
                     <Icon
                       name="message-circle"
                       size={24}
-                      color="#BDBDBD"
+                      color={item.comments?.length > 0 ? '#FF6C00' : '#BDBDBD'}
                       style={{ transform: [{ rotate: '-90deg' }] }}
                     />
-                    <Text style={styles.feedbackCounter}>
-                      {item.comments ? item.comments.length : 0}
+                    <Text
+                      style={{
+                        ...styles.feedbackCounter,
+                        color: item.comments?.length > 0 ? '#FF6C00' : '#BDBDBD',
+                      }}
+                    >
+                      {item.comments ? item.comments?.length : 0}
                     </Text>
                   </Pressable>
                 </View>
