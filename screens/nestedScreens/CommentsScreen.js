@@ -1,7 +1,6 @@
 import { useEffect, useLayoutEffect, useState } from 'react';
 import {
   Alert,
-  SafeAreaView,
   View,
   Image,
   StyleSheet,
@@ -34,6 +33,7 @@ const CommentsScreen = ({ navigation, route }) => {
 
     const postDocRef = await doc(db, 'posts', postId);
     const newComment = {
+      timePublished: Date.now().toString(),
       comment,
       name,
       email,
@@ -54,9 +54,16 @@ const CommentsScreen = ({ navigation, route }) => {
   // get all comments
   const getAllComments = async () => {
     const postDocRef = await doc(db, 'posts', postId);
-    onSnapshot(collection(postDocRef, 'comments'), (snapshot) =>
-      setComments(snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })))
-    );
+    onSnapshot(collection(postDocRef, 'comments'), (snapshot) => {
+      const allComments = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+      const sortedComments = [...allComments].sort((a, b) => {
+        const dateA = a.timePublished;
+        const dateB = b.timePublished;
+        return dateA < dateB ? 1 : -1;
+      });
+
+      return setComments(sortedComments);
+    });
   };
 
   // hide keyboard
@@ -98,83 +105,89 @@ const CommentsScreen = ({ navigation, route }) => {
     setComment('');
   };
 
-  return (
-    <View style={styles.container}>
-      <View style={styles.innerContainer}>
-        <TouchableWithoutFeedback onPress={keyboardHide}>
-          <SafeAreaView style={{ flex: 1 }}>
-            <View style={styles.imageWrapper}>
+  const renderItem = ({ item }) => {
+    return (
+      <TouchableWithoutFeedback onPress={keyboardHide}>
+        <View
+          style={{
+            ...styles.wrapper,
+            flexDirection: item?.owner === 'user' ? 'row-reverse' : 'row',
+          }}
+        >
+          <View>
+            {item.userAvatar ? (
+              <Image style={styles.avatar} source={{ uri: item.userAvatar }} />
+            ) : (
               <Image
-                style={styles.postImage}
+                style={styles.avatar}
                 source={{
-                  uri: photo,
+                  uri: 'https://images.unsplash.com/photo-1592859600972-1b0834d83747?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80',
                 }}
               />
+            )}
+          </View>
+
+          <View style={styles.commentWrapper}>
+            <Text style={styles.userName}>{item.name}</Text>
+            <View style={styles.innerCommentsWrapper}>
+              <Text style={styles.comments}>{item.comment}</Text>
             </View>
+            <Text style={styles.commentDate}>
+              {item.date} | {item.time}
+            </Text>
+          </View>
+        </View>
+      </TouchableWithoutFeedback>
+    );
+  };
 
-            <FlatList
-              showsVerticalScrollIndicator={false}
-              data={comments}
-              keyExtractor={(item) => item.id.toString()}
-              renderItem={({ item }) => (
-                <View
-                  style={{
-                    ...styles.wrapper,
-                    flexDirection: item?.owner === 'user' ? 'row-reverse' : 'row',
-                  }}
-                >
-                  <View>
-                    {item.userAvatar ? (
-                      <Image style={styles.avatar} source={{ uri: item.userAvatar }} />
-                    ) : (
-                      <Image
-                        style={styles.avatar}
-                        source={{
-                          uri: 'https://images.unsplash.com/photo-1592859600972-1b0834d83747?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80',
-                        }}
-                      />
-                    )}
-                  </View>
+  return (
+    <TouchableWithoutFeedback onPress={keyboardHide}>
+      <View style={styles.container}>
+        <View style={styles.imageWrapper}>
+          <Image
+            style={styles.postImage}
+            source={{
+              uri: photo,
+            }}
+          />
+        </View>
 
-                  <View style={styles.commentWrapper}>
-                    <Text style={styles.userName}>{item.name}</Text>
-                    <View style={styles.innerCommentsWrapper}>
-                      <Text style={styles.comments}>{item.comment}</Text>
-                    </View>
-                    <Text style={styles.commentDate}>
-                      {item.date} | {item.time}
-                    </Text>
-                  </View>
-                </View>
-              )}
-            />
-          </SafeAreaView>
-        </TouchableWithoutFeedback>
-      </View>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={{ ...styles.input, borderColor: focused === 'comment' ? '#FF6C00' : '#E8E8E8' }}
-          multiline={true}
-          selectionColor="#FF6C00"
-          blurOnSubmit={true}
-          placeholderTextColor="#BDBDBD"
-          placeholder="Comment..."
-          value={comment}
-          onChangeText={(value) => setComment(value)}
-          onBlur={() => {
-            setFocused('');
-            setIsShowKeyboard(false);
-          }}
-          onFocus={() => {
-            setFocused('comment');
-            setIsShowKeyboard(true);
-          }}
+        <FlatList
+          showsVerticalScrollIndicator={false}
+          data={comments}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderItem}
         />
-        <TouchableOpacity style={styles.sendBtn} onPress={handleSendComment}>
-          <Feather name="arrow-up" size={24} color="#FFFFFF" />
-        </TouchableOpacity>
+
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={{
+              ...styles.input,
+              borderColor: focused === 'comment' ? '#FF6C00' : '#E8E8E8',
+            }}
+            multiline={true}
+            selectionColor="#FF6C00"
+            blurOnSubmit={true}
+            placeholderTextColor="#BDBDBD"
+            placeholder="Comment..."
+            value={comment}
+            onChangeText={(value) => setComment(value)}
+            onBlur={() => {
+              setFocused('');
+              setIsShowKeyboard(false);
+            }}
+            onFocus={() => {
+              setFocused('comment');
+              setIsShowKeyboard(true);
+            }}
+          />
+          <TouchableOpacity style={styles.sendBtn} onPress={handleSendComment}>
+            <Feather name="arrow-up" size={24} color="#FFFFFF" />
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -188,10 +201,9 @@ const styles = StyleSheet.create({
     paddingTop: 32,
     paddingBottom: 16,
   },
-  innerContainer: {
-    flex: 1,
-  },
   imageWrapper: {
+    borderRadius: 8,
+    height: 240,
     alignItems: 'center',
   },
   postImage: {
@@ -199,21 +211,61 @@ const styles = StyleSheet.create({
     height: 240,
     borderRadius: 8,
   },
-  wrapper: { flexDirection: 'row', alignItems: 'baseline', marginTop: 24 },
+  // comment
+  wrapper: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    flexGrow: 1,
+    marginTop: 24,
+  },
   avatar: {
     width: 28,
     height: 28,
     marginRight: 5,
     borderRadius: 50,
   },
-  userName: { marginBottom: 10 },
+  userName: { marginBottom: 10, fontFamily: 'Roboto_500Medium', fontSize: 13, lineHeight: 18 },
   innerCommentsWrapper: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
     flexWrap: 'wrap',
   },
+  commentWrapper: {
+    maxWidth: 320,
+    marginBottom: 12,
+    marginTop: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    backgroundColor: 'rgba(0, 0, 0, 0.03)',
+    borderRadius: 6,
+  },
+
+  comments: {
+    color: '#212121',
+    fontSize: 13,
+    lineHeight: 18,
+    textAlign: 'left',
+  },
+
+  commentDate: {
+    color: '#BDBDBD',
+    fontSize: 10,
+    lineHeight: 12,
+    textAlign: 'right',
+  },
+  // input for send comment
   inputContainer: {
+    position: 'relative',
+    flexDirection: 'row',
+    alignItems: 'center',
+
+    marginTop: 16,
+    paddingBottom: Platform.OS === 'ios' ? keyboardHeight : 0,
+
+    alignSelf: 'flex-end',
+
     width: '100%',
     backgroundColor: '#FFFFFF',
   },
@@ -221,6 +273,7 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
     paddingLeft: 16,
     paddingTop: 16,
+    paddingRight: 54,
 
     width: '100%',
     height: 50,
@@ -246,34 +299,5 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     width: 34,
     height: 34,
-  },
-  photoWrapper: {
-    marginTop: 32,
-    marginBottom: 20,
-    borderRadius: 8,
-    height: 240,
-  },
-  commentWrapper: {
-    maxWidth: 320,
-    marginBottom: 12,
-    marginTop: 12,
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    backgroundColor: 'rgba(0, 0, 0, 0.03)',
-    borderRadius: 6,
-  },
-
-  comments: {
-    color: '#212121',
-    fontSize: 13,
-    lineHeight: 18,
-    textAlign: 'left',
-  },
-
-  commentDate: {
-    color: '#BDBDBD',
-    fontSize: 10,
-    lineHeight: 12,
-    textAlign: 'right',
   },
 });
