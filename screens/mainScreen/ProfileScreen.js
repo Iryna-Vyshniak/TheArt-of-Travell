@@ -6,6 +6,7 @@ import {
   Pressable,
   Text,
   FlatList,
+  TouchableOpacity,
 } from 'react-native';
 import { StyleSheet } from 'react-native';
 import Bg from '../../assets/login-bg.jpg';
@@ -88,7 +89,7 @@ const ProfileScreen = ({ route, navigation }) => {
                   <Text style={styles.imageTitle}>{item.title}</Text>
                   <View style={styles.wrapperData}>
                     <View style={styles.feedbackWrapper}>
-                      <Pressable
+                      <TouchableOpacity
                         onPress={() => navigation.navigate('Comments', item)}
                         style={styles.feedback}
                       >
@@ -98,16 +99,30 @@ const ProfileScreen = ({ route, navigation }) => {
                           color={item.comments?.length > 0 ? '#FF6C00' : '#BDBDBD'}
                           style={{ transform: [{ rotate: '-90deg' }] }}
                         />
-                        <Text style={styles.feedbackCounter}>
+                        <Text
+                          style={{
+                            ...styles.feedbackCounter,
+                            color: item.comments?.length > 0 ? '#212121' : '#BDBDBD',
+                          }}
+                        >
                           {item.comments ? item.comments?.length : 0}
                         </Text>
-                      </Pressable>
-                      <Pressable style={styles.feedback}>
-                        <Icon name="thumbs-up" size={24} color="#FF6C00" />
-                        <Text style={styles.feedbackCounter}>
+                      </TouchableOpacity>
+                      <TouchableOpacity style={styles.feedback}>
+                        <Icon
+                          name="thumbs-up"
+                          size={24}
+                          color={item.likes?.length > 0 ? '#FF6C00' : '#BDBDBD'}
+                        />
+                        <Text
+                          style={{
+                            ...styles.feedbackCounter,
+                            color: item.likes?.length > 0 ? '#212121' : '#BDBDBD',
+                          }}
+                        >
                           {item.likes ? item.likes?.length : 0}
                         </Text>
-                      </Pressable>
+                      </TouchableOpacity>
                     </View>
                     {/* <Pressable
                     onPress={() => Alert.alert('', 'Link to future map')}
