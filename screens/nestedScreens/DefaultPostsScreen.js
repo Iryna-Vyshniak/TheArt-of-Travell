@@ -1,16 +1,23 @@
-import { View, Image, Text, Pressable, StyleSheet, FlatList, SafeAreaView } from 'react-native';
+import {
+  View,
+  Image,
+  Text,
+  Pressable,
+  StyleSheet,
+  FlatList,
+  SafeAreaView,
+  TouchableOpacity,
+} from 'react-native';
 import Icon from '@expo/vector-icons/Feather';
 import { useEffect, useLayoutEffect, useState } from 'react';
-import { collection, onSnapshot, query } from 'firebase/firestore';
+import { collection, doc, onSnapshot, query, setDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../../firebase/config';
 import { useSelector } from 'react-redux';
 
 const DefaultPostsScreen = ({ route, navigation }) => {
   const [userPosts, setUserPosts] = useState([]);
 
-  const { name, email, userAvatar } = useSelector((state) => state.auth);
-
-  //console.log(userAvatar);
+  const { name, email, userAvatar, userId } = useSelector((state) => state.auth);
 
   // add header
   useLayoutEffect(() => {
@@ -29,6 +36,25 @@ const DefaultPostsScreen = ({ route, navigation }) => {
   useEffect(() => {
     getAllPosts();
   }, []);
+
+  // add or remove likes
+  const toggleLike = async (postId, likes, likeStatus) => {
+    try {
+      const userExist = likes.includes(userId);
+
+      if (userExist) {
+        const updatedLikes = likes.filter((user) => user !== userId);
+        const postRef = doc(db, 'posts', postId);
+        await setDoc(postRef, { likes: updatedLikes, likeStatus: false }, { merge: true });
+      } else {
+        const updatedLikes = [...likes, userId];
+        const postRef = doc(db, 'posts', postId);
+        await setDoc(postRef, { likes: updatedLikes, likeStatus: true }, { merge: true });
+      }
+    } catch (error) {
+      console.log('error-message', error.message);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -64,7 +90,7 @@ const DefaultPostsScreen = ({ route, navigation }) => {
               <Text style={styles.imageTitle}>{item.title}</Text>
               <View style={styles.wrapperData}>
                 <View style={styles.feedbackWrapper}>
-                  <Pressable
+                  <TouchableOpacity
                     style={styles.feedback}
                     onPress={() => navigation.navigate('Comments', item)}
                   >
@@ -77,12 +103,30 @@ const DefaultPostsScreen = ({ route, navigation }) => {
                     <Text
                       style={{
                         ...styles.feedbackCounter,
-                        color: item.comments?.length > 0 ? '#FF6C00' : '#BDBDBD',
+                        color: item.comments?.length > 0 ? '#212121' : '#BDBDBD',
                       }}
                     >
                       {item.comments ? item.comments?.length : 0}
                     </Text>
-                  </Pressable>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.feedback}
+                    onPress={() => toggleLike(item.id, item.likes, item.likeStatus)}
+                  >
+                    <Icon
+                      name="thumbs-up"
+                      size={24}
+                      color={item.likes?.length > 0 ? '#FF6C00' : '#BDBDBD'}
+                    />
+                    <Text
+                      style={{
+                        ...styles.feedbackCounter,
+                        color: item.likes?.length > 0 ? '#212121' : '#BDBDBD',
+                      }}
+                    >
+                      {item.likes ? item.likes?.length : 0}
+                    </Text>
+                  </TouchableOpacity>
                 </View>
                 <Pressable
                   style={styles.location}
