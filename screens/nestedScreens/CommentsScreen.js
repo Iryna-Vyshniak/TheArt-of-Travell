@@ -43,7 +43,7 @@ const CommentsScreen = ({ navigation, route }) => {
       owner: userId === postOwnerId ? 'user' : 'follower',
     };
 
-    console.log(userId + '===' + postOwnerId);
+    // console.log(userId + '===' + postOwnerId);
 
     await addDoc(collection(postDocRef, 'comments'), newComment);
     await updateDoc(postDocRef, {

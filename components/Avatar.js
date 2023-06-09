@@ -33,7 +33,7 @@ export const Avatar = () => {
       setAvatar(result.assets[0].uri);
 
       const avatarURL = await uploadPhotoToServer(result.assets[0].uri);
-      console.log('AVATAR', avatarURL);
+      // console.log('AVATAR', avatarURL);
       dispatch(changeAvatarUser(avatarURL));
     }
   };
@@ -60,13 +60,13 @@ export const Avatar = () => {
       >
         {avatar ? (
           <Icon
-            name='plus'
+            name="plus"
             size={20}
-            color='#E8E8E8'
+            color="#E8E8E8"
             style={{ transform: [{ rotate: '-45deg' }] }}
           />
         ) : (
-          <Icon name='plus' size={20} color='#FF6C00' />
+          <Icon name="plus" size={20} color="#FF6C00" />
         )}
       </Pressable>
     </View>

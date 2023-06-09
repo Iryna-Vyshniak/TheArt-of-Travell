@@ -159,7 +159,7 @@ const CreatePostsScreen = ({ navigation }) => {
 
     try {
       await addDoc(collection(db, 'posts'), newPost);
-      console.log('Post is loaded. Well Done', newPost);
+      // console.log('Post is loaded. Well Done', newPost);
     } catch (error) {
       console.error('Error while adding doc: ', error.message);
     }

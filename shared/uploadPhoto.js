@@ -19,6 +19,6 @@ export const uploadPhotoToServer = async (avatar) => {
   await uploadBytes(storageRef, file, metadata);
 
   const downloadPhoto = await getDownloadURL(storageRef);
-  console.log('downloadPhoto:', downloadPhoto);
+  // console.log('downloadPhoto:', downloadPhoto);
   return downloadPhoto;
 };
