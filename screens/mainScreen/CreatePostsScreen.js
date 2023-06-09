@@ -48,7 +48,6 @@ const CreatePostsScreen = ({ navigation }) => {
   const { image, title, position } = post;
   const { userId, name } = useSelector((state) => state.auth);
 
-
   // get permissions to take photo and get location
   useEffect(() => {
     (async () => {
@@ -67,7 +66,6 @@ const CreatePostsScreen = ({ navigation }) => {
       }
     })();
   }, []);
-
 
   // disabled buttons to publish post
   useEffect(() => {
@@ -139,7 +137,7 @@ const CreatePostsScreen = ({ navigation }) => {
     await uploadBytes(storageRef, file, metadata);
 
     const downloadPhoto = await getDownloadURL(storageRef);
-    console.log('downloadPhoto:', downloadPhoto);
+    //console.log('downloadPhoto:', downloadPhoto);
     return downloadPhoto;
   };
 
@@ -234,10 +232,7 @@ const CreatePostsScreen = ({ navigation }) => {
                 type={type}
                 ratio="1:1"
               >
-                <Pressable
-                  style={styles.toggleCamera}
-                  onPress={toggleCameraType}
-                >
+                <Pressable style={styles.toggleCamera} onPress={toggleCameraType}>
                   <Text style={{ color: '#fff' }}>Flip Camera</Text>
                 </Pressable>
                 <Pressable
@@ -453,4 +448,3 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
 });
-
