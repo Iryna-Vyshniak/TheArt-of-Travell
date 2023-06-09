@@ -113,6 +113,7 @@ const CommentsScreen = ({ navigation, route }) => {
             </View>
 
             <FlatList
+              showsVerticalScrollIndicator={false}
               data={comments}
               keyExtractor={(item) => item.id.toString()}
               renderItem={({ item }) => (
