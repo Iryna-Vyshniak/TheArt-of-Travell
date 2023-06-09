@@ -73,6 +73,7 @@ const ProfileScreen = ({ route, navigation }) => {
 
           {userPosts && (
             <FlatList
+              showsVerticalScrollIndicator={false}
               keyExtractor={(item) => item.id}
               data={userPosts}
               renderItem={({ item }) => (
