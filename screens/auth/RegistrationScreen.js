@@ -193,10 +193,9 @@ const RegistrationScreen = ({ navigation }) => {
                 style={{ ...styles.form, width: dimensions.windowWidth, gap: isPortrait ? 16 : 8 }}
               >
                 <TextInput
-                  // id="name"
                   value={name}
                   onChangeText={(value) =>
-                    setFormData((prevState) => ({ ...prevState, name: value.trim() }))
+                    setFormData((prevState) => ({ ...prevState, name: value }))
                   }
                   placeholder="Логін"
                   placeholderTextColor="#BDBDBD"
@@ -215,10 +214,9 @@ const RegistrationScreen = ({ navigation }) => {
                   }}
                 />
                 <TextInput
-                  // id="email"
                   value={email}
                   onChangeText={(value) =>
-                    setFormData((prevState) => ({ ...prevState, email: value.trim() }))
+                    setFormData((prevState) => ({ ...prevState, email: value }))
                   }
                   placeholder="Адреса електронної пошти"
                   placeholderTextColor="#BDBDBD"
@@ -240,10 +238,9 @@ const RegistrationScreen = ({ navigation }) => {
                 <View style={{ ...styles.passwordContainer, marginBottom: isPortrait ? 43 : 8 }}>
                   <TextInput
                     type={showPassword ? 'text' : 'password'}
-                    //id="password"
                     value={password}
                     onChangeText={(value) =>
-                      setFormData((prevState) => ({ ...prevState, password: value.trim() }))
+                      setFormData((prevState) => ({ ...prevState, password: value }))
                     }
                     placeholder="Пароль"
                     placeholderTextColor="#BDBDBD"
@@ -358,7 +355,6 @@ const styles = StyleSheet.create({
 
   title: {
     marginTop: -32,
-    //marginBottom: 33,
 
     color: '#212121',
 
@@ -373,9 +369,8 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'flex-start',
     gap: 16,
-    backgroundColor: 'transparent',
-    //paddingHorizontal: 16,
     width: '100%',
+    backgroundColor: 'transparent',
   },
 
   input: {
@@ -398,7 +393,6 @@ const styles = StyleSheet.create({
 
   passwordContainer: {
     position: 'relative',
-    //marginBottom: 43,
   },
 
   passwordIndicator: {
