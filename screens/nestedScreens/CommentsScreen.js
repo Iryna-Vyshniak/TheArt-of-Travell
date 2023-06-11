@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import {
   Alert,
   View,
@@ -17,11 +17,8 @@ import { useSelector } from 'react-redux';
 import { db } from '../../firebase/config';
 import { collection, doc, addDoc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { ThemeContext } from '../../shared/theme/ThemeContext';
-import { useIsFocused } from '@react-navigation/native';
 
-const CommentsScreen = ({ navigation, route }) => {
-  console.log(route);
-
+const CommentsScreen = ({ route }) => {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [focused, setFocused] = useState('');
   const [comment, setComment] = useState('');
@@ -30,11 +27,10 @@ const CommentsScreen = ({ navigation, route }) => {
   const { name, userAvatar, email, userId } = useSelector((state) => state.auth);
   const { id: postId, photo, userId: postOwnerId } = route.params;
   const { theme } = useContext(ThemeContext);
-  const isFocused = useIsFocused();
 
   // create comment
   const createComment = async () => {
-    const date = new Date().toLocaleDateString();
+    const date = new Date().toLocaleDateString('uk-UA');
     const time = new Date().toLocaleTimeString();
 
     const postDocRef = await doc(db, 'posts', postId);
@@ -65,7 +61,7 @@ const CommentsScreen = ({ navigation, route }) => {
       const sortedComments = [...allComments].sort((a, b) => {
         const dateA = a.timePublished;
         const dateB = b.timePublished;
-        return dateA < dateB ? 1 : -1;
+        return dateA - dateB;
       });
 
       return setComments(sortedComments);
