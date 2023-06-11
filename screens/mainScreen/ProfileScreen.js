@@ -12,20 +12,19 @@ import { StyleSheet } from 'react-native';
 import Bg from '../../assets/login-bg.jpg';
 import Icon from '@expo/vector-icons/Feather';
 
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { authSignOutUser } from '../../redux/auth/authOperation';
 import { db } from '../../firebase/config';
 import { collection, query, onSnapshot, where, getDocs } from 'firebase/firestore';
-import { authSlice } from '../../redux/auth/authReducer';
 import { Avatar } from '../../components/Avatar';
+import { ThemeContext } from '../../shared/theme/ThemeContext';
 
 const ProfileScreen = ({ route, navigation }) => {
   const [userPosts, setUserPosts] = useState([]);
-  const [likesCount, setLikesCount] = useState(0);
-  const { userId, name, userAvatar, email } = useSelector((state) => state.auth);
+  const { userId, name } = useSelector((state) => state.auth);
 
-  const { updateUserProfile } = authSlice.actions;
+  const { theme } = useContext(ThemeContext);
 
   const getUserPosts = async () => {
     try {
@@ -58,15 +57,15 @@ const ProfileScreen = ({ route, navigation }) => {
   return (
     <SafeAreaView style={styles.mainContainer}>
       <ImageBackground source={Bg} style={styles.imageBg}>
-        <View style={styles.container}>
+        <View style={{ ...styles.container, backgroundColor: theme.background }}>
           <Avatar />
           <Pressable style={styles.logoutBtn} onPress={signOut}>
             <Icon name="log-out" size={24} color="#BDBDBD" />
           </Pressable>
-          <Text style={styles.name}>{name}</Text>
+          <Text style={{ ...styles.name, color: theme.color }}>{name}</Text>
 
           {userPosts?.length === 0 && (
-            <View style={styles.emptyBox}>
+            <View style={{ ...styles.emptyBox, backgroundColor: theme.background }}>
               <Text style={styles.noPosts}>У Вас немає постів 😌</Text>
             </View>
           )}
@@ -77,7 +76,7 @@ const ProfileScreen = ({ route, navigation }) => {
               keyExtractor={(item) => item.id}
               data={userPosts}
               renderItem={({ item }) => (
-                <View style={styles.card}>
+                <View style={{ ...styles.card, backgroundColor: theme.background }}>
                   <View style={styles.imageThumb}>
                     <Image
                       source={{
@@ -87,7 +86,7 @@ const ProfileScreen = ({ route, navigation }) => {
                     />
                   </View>
 
-                  <Text style={styles.imageTitle}>{item.title}</Text>
+                  <Text style={{ ...styles.imageTitle, color: theme.color }}>{item.title}</Text>
                   <View style={styles.wrapperData}>
                     <View style={styles.feedbackWrapper}>
                       <TouchableOpacity
@@ -103,7 +102,7 @@ const ProfileScreen = ({ route, navigation }) => {
                         <Text
                           style={{
                             ...styles.feedbackCounter,
-                            color: item.comments?.length > 0 ? '#212121' : '#BDBDBD',
+                            color: item.comments?.length > 0 ? theme.color : '#BDBDBD',
                           }}
                         >
                           {item.comments ? item.comments?.length : 0}
@@ -118,7 +117,7 @@ const ProfileScreen = ({ route, navigation }) => {
                         <Text
                           style={{
                             ...styles.feedbackCounter,
-                            color: item.likes?.length > 0 ? '#212121' : '#BDBDBD',
+                            color: item.likes?.length > 0 ? theme.color : '#BDBDBD',
                           }}
                         >
                           {item.likes ? item.likes?.length : 0}
@@ -134,7 +133,9 @@ const ProfileScreen = ({ route, navigation }) => {
                       style={styles.location}
                     >
                       <Icon name="map-pin" size={24} color="#BDBDBD" />
-                      <Text style={styles.locationTitle}>{item.position}</Text>
+                      <Text style={{ ...styles.locationTitle, color: theme.color }}>
+                        {item.position}
+                      </Text>
                     </Pressable>
                   </View>
                 </View>
@@ -151,6 +152,7 @@ export default ProfileScreen;
 
 const styles = StyleSheet.create({
   mainContainer: {
+    position: 'relative',
     flex: 1,
     justifyContent: 'center',
     width: '100%',
@@ -161,7 +163,6 @@ const styles = StyleSheet.create({
   },
   emptyBox: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 16,
@@ -184,7 +185,6 @@ const styles = StyleSheet.create({
     marginTop: 147,
     paddingHorizontal: 16,
 
-    backgroundColor: '#FFFFFF',
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
   },
@@ -204,7 +204,6 @@ const styles = StyleSheet.create({
   name: {
     marginTop: -32,
     marginBottom: 32,
-    color: '#212121',
     fontFamily: 'Roboto_500Medium',
     fontSize: 30,
     lineHeight: 35,
@@ -215,7 +214,6 @@ const styles = StyleSheet.create({
     marginBottom: 32,
     width: 343,
     height: 299,
-    backgroundColor: '#FFFFFF',
   },
   imageThumb: {
     marginBottom: 8,
@@ -230,7 +228,6 @@ const styles = StyleSheet.create({
 
   imageTitle: {
     marginBottom: 8,
-    color: '#212121',
     fontFamily: 'Roboto_500Medium',
     fontSize: 16,
     lineHeight: 19,
@@ -260,7 +257,6 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   feedbackCounter: {
-    color: '#212121',
     fontFamily: 'Roboto_400Regular',
     fontSize: 16,
     lineHeight: 19,
@@ -273,7 +269,6 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   locationTitle: {
-    color: '#212121',
     fontFamily: 'Roboto_400Regular',
     fontSize: 16,
     lineHeight: 19,
