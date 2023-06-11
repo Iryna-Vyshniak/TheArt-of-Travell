@@ -3,6 +3,7 @@ import { StyleSheet, Text } from 'react-native';
 import { Provider } from 'react-redux';
 
 import { store } from './redux/store';
+import { theme } from './shared/theme/theme';
 
 import {
   useFonts,
@@ -10,7 +11,9 @@ import {
   Roboto_500Medium,
   Roboto_700Bold,
 } from '@expo-google-fonts/roboto';
-import Main from './components/Main';
+
+import { ThemeProvider } from './shared/theme/ThemeContext';
+import MainNavigation from './components/Main';
 
 export default function App() {
   let [fontsLoaded] = useFonts({
@@ -24,17 +27,10 @@ export default function App() {
   }
 
   return (
-    <Provider store={store}>
-      <Main />
-    </Provider>
+    <ThemeProvider>
+      <Provider store={store}>
+        <MainNavigation />
+      </Provider>
+    </ThemeProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
