@@ -1,25 +1,9 @@
-import { useEffect, useLayoutEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 
-const MapScreen = ({ route, navigation }) => {
+const MapScreen = ({ route }) => {
   const [location, setLocation] = useState({});
-
-  // add own header and hide tab bottom
-  useLayoutEffect(() => {
-    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } });
-    navigation.setOptions({ title: 'Maпа' });
-    return () => {
-      navigation.getParent().setOptions({
-        tabBarStyle: {
-          display: 'flex',
-          height: 83,
-          paddingTop: 9,
-          boxShadow: '0px -0.5px 0px rgba(0, 0, 0, 0.3)',
-        },
-      });
-    };
-  }, [navigation]);
 
   // set location
   useEffect(() => {
@@ -30,8 +14,6 @@ const MapScreen = ({ route, navigation }) => {
       });
     }
   }, [route.params]);
-
-  //console.log(location);
 
   return (
     <View style={styles.container}>
