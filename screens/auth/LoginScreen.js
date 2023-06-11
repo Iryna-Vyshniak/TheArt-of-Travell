@@ -57,8 +57,7 @@ const LoginScreen = ({ navigation }) => {
     setShowPassword((prevState) => !prevState);
   }
 
-
-// check validate email, password
+  // check validate email, password
   const validateEmail = (str) => {
     const emailRegex =
       /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -79,16 +78,13 @@ const LoginScreen = ({ navigation }) => {
       Alert.alert('Warning', 'Password is required. Please write password');
       return;
     }
-    return navigation.navigate('Home', { screen: 'Home' });
   };
-
 
   // hide keyboard
   const keyboardHide = () => {
     setKeyboardStatus(false);
     Keyboard.dismiss();
   };
-
 
   // submit
   const handleSubmit = () => {
@@ -103,7 +99,7 @@ const LoginScreen = ({ navigation }) => {
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
       <SafeAreaView style={styles.mainContainer}>
-        <ImageBackground source={Bg} resizeMode='cover' style={styles.image}>
+        <ImageBackground source={Bg} resizeMode="cover" style={styles.image}>
           <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             style={styles.keyboard}
@@ -123,11 +119,11 @@ const LoginScreen = ({ navigation }) => {
                   onChangeText={(value) =>
                     setFormData((prevState) => ({ ...prevState, email: value }))
                   }
-                  placeholder='Адреса електронної пошти'
-                  placeholderTextColor='#BDBDBD'
-                  keyboardType='email-address'
-                  autoCompleteType='email-address'
-                  autoCapitalize='none'
+                  placeholder="Адреса електронної пошти"
+                  placeholderTextColor="#BDBDBD"
+                  keyboardType="email-address"
+                  autoCompleteType="email-address"
+                  autoCapitalize="none"
                   selectionColor={'#FF6C00'}
                   onFocus={() => {
                     setKeyboardStatus(true);
@@ -144,16 +140,16 @@ const LoginScreen = ({ navigation }) => {
                 <View style={styles.passwordContainer}>
                   <TextInput
                     type={showPassword ? 'text' : 'password'}
-                   // id='password'
+                    // id='password'
                     value={password}
                     onChangeText={(value) =>
                       setFormData((prevState) => ({ ...prevState, password: value }))
                     }
-                    placeholder='Пароль'
-                    placeholderTextColor='#BDBDBD'
+                    placeholder="Пароль"
+                    placeholderTextColor="#BDBDBD"
                     secureTextEntry={!showPassword}
-                    autoCompleteType='password'
-                    autoCapitalize='none'
+                    autoCompleteType="password"
+                    autoCapitalize="none"
                     selectionColor={'#FF6C00'}
                     onFocus={() => {
                       setKeyboardStatus(true);
