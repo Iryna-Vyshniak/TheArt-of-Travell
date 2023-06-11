@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import {
   Alert,
   View,
@@ -16,8 +16,12 @@ import { Feather } from '@expo/vector-icons';
 import { useSelector } from 'react-redux';
 import { db } from '../../firebase/config';
 import { collection, doc, addDoc, onSnapshot, updateDoc } from 'firebase/firestore';
+import { ThemeContext } from '../../shared/theme/ThemeContext';
+import { useIsFocused } from '@react-navigation/native';
 
 const CommentsScreen = ({ navigation, route }) => {
+  console.log(route);
+
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [focused, setFocused] = useState('');
   const [comment, setComment] = useState('');
@@ -25,6 +29,8 @@ const CommentsScreen = ({ navigation, route }) => {
 
   const { name, userAvatar, email, userId } = useSelector((state) => state.auth);
   const { id: postId, photo, userId: postOwnerId } = route.params;
+  const { theme } = useContext(ThemeContext);
+  const isFocused = useIsFocused();
 
   // create comment
   const createComment = async () => {
@@ -72,22 +78,6 @@ const CommentsScreen = ({ navigation, route }) => {
     Keyboard.dismiss();
   };
 
-  // add own header and hide tab bottom
-  useLayoutEffect(() => {
-    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } });
-    navigation.setOptions({ title: 'Коментарі' });
-    return () => {
-      navigation.getParent().setOptions({
-        tabBarStyle: {
-          display: 'flex',
-          height: 83,
-          paddingTop: 9,
-          boxShadow: '0px -0.5px 0px rgba(0, 0, 0, 0.3)',
-        },
-      });
-    };
-  }, [navigation]);
-
   // get all comments
   useEffect(() => {
     getAllComments();
@@ -127,10 +117,10 @@ const CommentsScreen = ({ navigation, route }) => {
             )}
           </View>
 
-          <View style={styles.commentWrapper}>
-            <Text style={styles.userName}>{item.name}</Text>
+          <View style={{ ...styles.commentWrapper, backgroundColor: theme.box }}>
+            <Text style={{ ...styles.userName, color: theme.color }}>{item.name}</Text>
             <View style={styles.innerCommentsWrapper}>
-              <Text style={styles.comments}>{item.comment}</Text>
+              <Text style={{ ...styles.comments, color: theme.color }}>{item.comment}</Text>
             </View>
             <Text style={styles.commentDate}>
               {item.date} | {item.time}
@@ -143,7 +133,7 @@ const CommentsScreen = ({ navigation, route }) => {
 
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
-      <View style={styles.container}>
+      <View style={{ ...styles.container, backgroundColor: theme.background }}>
         <View style={styles.imageWrapper}>
           <Image
             style={styles.postImage}
@@ -160,10 +150,11 @@ const CommentsScreen = ({ navigation, route }) => {
           renderItem={renderItem}
         />
 
-        <View style={styles.inputContainer}>
+        <View style={{ ...styles.inputContainer, backgroundColor: theme.background }}>
           <TextInput
             style={{
               ...styles.input,
+              color: theme.color,
               borderColor: focused === 'comment' ? '#FF6C00' : '#E8E8E8',
             }}
             multiline={true}
@@ -196,7 +187,6 @@ export default CommentsScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
     paddingHorizontal: 16,
     paddingTop: 32,
     paddingBottom: 16,
@@ -217,12 +207,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'baseline',
     flexGrow: 1,
+    gap: 5,
     marginTop: 24,
   },
   avatar: {
     width: 28,
     height: 28,
-    marginRight: 5,
     borderRadius: 50,
   },
   userName: { marginBottom: 10, fontFamily: 'Roboto_500Medium', fontSize: 13, lineHeight: 18 },
@@ -238,19 +228,17 @@ const styles = StyleSheet.create({
     marginTop: 12,
     paddingVertical: 10,
     paddingHorizontal: 16,
-    backgroundColor: 'rgba(0, 0, 0, 0.03)',
     borderRadius: 6,
   },
 
   comments: {
-    color: '#212121',
     fontSize: 13,
     lineHeight: 18,
     textAlign: 'left',
+    marginBottom: 10,
   },
 
   commentDate: {
-    color: '#BDBDBD',
     fontSize: 10,
     lineHeight: 12,
     textAlign: 'right',
@@ -267,7 +255,6 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
 
     width: '100%',
-    backgroundColor: '#FFFFFF',
   },
   input: {
     paddingBottom: 16,
@@ -282,8 +269,6 @@ const styles = StyleSheet.create({
     lineHeight: 19,
     textAlignVertical: 'top',
 
-    color: '#212121',
-    backgroundColor: '#F6F6F6',
     borderWidth: 1,
     borderColor: '#E8E8E8',
     borderRadius: 20,
