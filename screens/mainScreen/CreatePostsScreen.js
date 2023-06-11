@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Camera, CameraType } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 import * as ImagePicker from 'expo-image-picker';
@@ -24,6 +24,10 @@ import {
   Pressable,
   Vibration,
 } from 'react-native';
+import { ThemeContext } from '../../shared/theme/ThemeContext';
+
+import { useIsFocused } from '@react-navigation/native';
+import { useLayoutEffect } from 'react';
 
 const initialPost = {
   image: null,
@@ -40,6 +44,7 @@ const CreatePostsScreen = ({ navigation }) => {
   const [type, setType] = useState(CameraType.back);
   const [camera, setCamera] = useState(null);
   const [post, setPost] = useState(initialPost);
+  const [isPhotoTaken, setPhotoTaken] = useState(false);
 
   const [keyboardStatus, setKeyboardStatus] = useState(false);
   const [focused, setFocused] = useState('');
@@ -48,14 +53,27 @@ const CreatePostsScreen = ({ navigation }) => {
   const { image, title, position } = post;
   const { userId, name } = useSelector((state) => state.auth);
 
+  const { theme } = useContext(ThemeContext);
+
+  const isFocused = useIsFocused();
+
+  // useEffect(() => {
+  //   const unsubscribe = navigation.addListener('focus', () => {
+  //     // do something
+  //   });
+
+  //   return unsubscribe;
+  // }, [navigation]);
+
   // get permissions to take photo and get location
-  useEffect(() => {
+  useLayoutEffect(() => {
     (async () => {
       const cameraStatus = await Camera.requestCameraPermissionsAsync();
       await MediaLibrary.requestPermissionsAsync();
       requestPermission(cameraStatus === 'granted');
+      console.log(cameraStatus);
     })();
-  }, []);
+  }, [isFocused]);
 
   useEffect(() => {
     (async () => {
@@ -65,7 +83,7 @@ const CreatePostsScreen = ({ navigation }) => {
         return;
       }
     })();
-  }, []);
+  }, [isFocused]);
 
   // disabled buttons to publish post
   useEffect(() => {
@@ -87,12 +105,20 @@ const CreatePostsScreen = ({ navigation }) => {
 
   // take photo
   const takePhoto = async () => {
-    if (camera) {
-      const { uri } = await camera.takePictureAsync();
-      await MediaLibrary.createAssetAsync(uri);
-      Vibration.vibrate();
-      getLocation();
-      setPost((prevState) => ({ ...prevState, image: uri }));
+    if (camera && isPhotoTaken === false) {
+      try {
+        const photo = await camera.takePictureAsync();
+        if (!photo) return false;
+
+        await MediaLibrary.createAssetAsync(photo.uri);
+        Vibration.vibrate();
+        setPhotoTaken(true);
+        getLocation();
+        setPost((prevState) => ({ ...prevState, image: photo.uri }));
+      } catch (error) {
+        console.error('Error taking photo:', error);
+        // Обробка помилки при зйомці фото
+      }
     }
   };
 
@@ -178,19 +204,20 @@ const CreatePostsScreen = ({ navigation }) => {
 
   // reset form post
   const resetFormPost = () => {
+    setPhotoTaken(false);
     setPost(initialPost);
   };
 
   // submit post
   const handlePublishedPost = () => {
     uploadPostToServer();
-    navigation.navigate('PostsDefault', { ...post });
+    navigation.navigate('Posts', { ...post });
     keyboardHide();
     resetFormPost();
     setDisabled(true);
   };
 
-  // permissinons for camera
+  //permissinons for camera
   if (!permission) {
     return <View />;
   }
@@ -201,7 +228,7 @@ const CreatePostsScreen = ({ navigation }) => {
 
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={{ ...styles.container, backgroundColor: theme.background }}>
         <KeyboardAvoidingView behavior={Platform.OS == 'ios' ? 'padding' : 'height'}>
           <View
             style={{
@@ -209,26 +236,10 @@ const CreatePostsScreen = ({ navigation }) => {
               paddingBottom: keyboardStatus && Platform.OS == 'android' ? 0 : 12,
             }}
           >
-            {image ? (
-              <View style={styles.addImageContainer}>
-                <Image source={{ uri: image }} style={styles.image} />
-                <Pressable
-                  onPress={takePhotoGallery}
-                  accessibilityLabel={'Change picture'}
-                  style={{
-                    ...styles.addImageBtn,
-                    backgroundColor: 'rgba(255, 255, 255, 0.3)',
-                  }}
-                >
-                  <Feather name="camera" size={24} color={'#FFFFFF'} />
-                </Pressable>
-              </View>
-            ) : (
+            {isFocused && !image && !isPhotoTaken ? (
               <Camera
-                style={styles.addImageContainer}
-                ref={(ref) => {
-                  setCamera(ref);
-                }}
+                style={{ ...styles.addImageContainer, borderColor: theme.color }}
+                ref={(ref) => setCamera(ref)}
                 type={type}
                 ratio="1:1"
               >
@@ -246,7 +257,25 @@ const CreatePostsScreen = ({ navigation }) => {
                   <Feather name="camera" size={24} color={'#BDBDBD'} />
                 </Pressable>
               </Camera>
+            ) : (
+              <View style={{ ...styles.addImageContainer, borderColor: theme.color }}>
+                <Image source={{ uri: image }} style={styles.image} />
+                <Pressable
+                  onPress={() => {
+                    takePhotoGallery();
+                    setPhotoTaken(false);
+                  }}
+                  accessibilityLabel={'Change picture'}
+                  style={{
+                    ...styles.addImageBtn,
+                    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+                  }}
+                >
+                  <Feather name="camera" size={24} color={'#FFFFFF'} />
+                </Pressable>
+              </View>
             )}
+
             {image ? (
               <Text style={styles.imageCapture}>Редагувати фото</Text>
             ) : (
@@ -271,6 +300,7 @@ const CreatePostsScreen = ({ navigation }) => {
               onChangeText={(value) => setPost((prevState) => ({ ...prevState, title: value }))}
               style={{
                 ...styles.input,
+                color: theme.color,
                 borderBottomColor: focused === 'title' ? '#FF6C00' : '#E8E8E8',
               }}
             />
@@ -293,6 +323,7 @@ const CreatePostsScreen = ({ navigation }) => {
               onChangeText={(value) => setPost((prevState) => ({ ...prevState, position: value }))}
               style={{
                 ...styles.input,
+                color: theme.color,
                 borderBottomColor: focused === 'position' ? '#FF6C00' : '#E8E8E8',
               }}
             />
@@ -324,7 +355,6 @@ export default CreatePostsScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
     paddingHorizontal: 16,
   },
 
@@ -407,7 +437,7 @@ const styles = StyleSheet.create({
   input: {
     textAlign: 'left',
     width: '100%',
-    color: '#212121',
+    //color: '#212121',
     fontFamily: 'Roboto_400Regular',
     fontSize: 16,
     lineHeight: 19,
@@ -441,7 +471,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginLeft: 'auto',
     marginRight: 'auto',
-    marginTop: 110,
+    marginTop: 100,
     width: 70,
     height: 40,
     backgroundColor: '#F6F6F6',
