@@ -1,9 +1,6 @@
 import 'react-native-gesture-handler';
-import { StyleSheet, Text } from 'react-native';
 import { Provider } from 'react-redux';
-
 import { store } from './redux/store';
-import { theme } from './shared/theme/theme';
 
 import {
   useFonts,
