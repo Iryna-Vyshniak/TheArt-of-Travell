@@ -84,7 +84,6 @@ const RegistrationScreen = ({ navigation }) => {
       Alert.alert('Warning', 'Password is required. Please write password');
       return;
     }
-    return navigation.navigate('Home', { screen: 'Home' });
   };
 
   // hide keyboard
