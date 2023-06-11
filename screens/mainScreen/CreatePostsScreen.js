@@ -1,12 +1,13 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState, useLayoutEffect } from 'react';
+import { useIsFocused } from '@react-navigation/native';
 import { Camera, CameraType } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
-import { db, storage } from '../../firebase/config';
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { addDoc, collection } from 'firebase/firestore';
 import { useSelector } from 'react-redux';
+import { db, storage } from '../../firebase/config';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 
 import { Feather } from '@expo/vector-icons';
 import {
@@ -25,9 +26,6 @@ import {
   Vibration,
 } from 'react-native';
 import { ThemeContext } from '../../shared/theme/ThemeContext';
-
-import { useIsFocused } from '@react-navigation/native';
-import { useLayoutEffect } from 'react';
 
 const initialPost = {
   image: null,
@@ -56,14 +54,6 @@ const CreatePostsScreen = ({ navigation }) => {
   const { theme } = useContext(ThemeContext);
 
   const isFocused = useIsFocused();
-
-  // useEffect(() => {
-  //   const unsubscribe = navigation.addListener('focus', () => {
-  //     // do something
-  //   });
-
-  //   return unsubscribe;
-  // }, [navigation]);
 
   // get permissions to take photo and get location
   useLayoutEffect(() => {
@@ -437,7 +427,6 @@ const styles = StyleSheet.create({
   input: {
     textAlign: 'left',
     width: '100%',
-    //color: '#212121',
     fontFamily: 'Roboto_400Regular',
     fontSize: 16,
     lineHeight: 19,
