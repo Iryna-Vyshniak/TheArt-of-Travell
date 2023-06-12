@@ -40,7 +40,7 @@ export const authSignUpUser =
         Alert.alert('Already exists an account with the given email address');
       }
       if (errorCode == 'auth/invalid-email') {
-        Alert.alert('Email address is not valid');
+        Alert.alert('Email address is not valid and it is required');
       } else {
         throw error;
       }
@@ -58,7 +58,7 @@ export const authSignInUser =
 
       if (errorCode === 'auth/wrong-password') {
         Alert.alert(
-          'Password is invalid for the given email, or the account corresponding to the email does not have a password set'
+          'Password is invalid for the given email'
         );
       }
       if (errorCode === 'auth/user-not-found') {
@@ -68,7 +68,7 @@ export const authSignInUser =
         Alert.alert('User corresponding to the given email has been disabled');
       }
       if (errorCode === 'auth/invalid-email') {
-        Alert.alert('Email address is not valid');
+        Alert.alert('Email address is not valid and it`s required');
       } else {
         throw error;
       }
