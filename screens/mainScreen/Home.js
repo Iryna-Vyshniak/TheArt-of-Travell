@@ -34,10 +34,13 @@ const Home = ({ navigation }) => {
     },
     headerBox: {
       height: 73,
-      backgroundColor: theme.background,
-      boxShadow: '0px -0.5px 0px rgba(0, 0, 0, 0.3)',
-      borderBottomWidth: 1,
-      borderBottomColor: '#BDBDBD',
+      backgroundColor: theme.tab,
+      shadowColor: theme.shadow,
+      shadowOpacity: 0.3,
+      shadowOffset: { width: 0, height: -0.5 },
+      shadowRadius: 0,
+      borderBottomWidth: 0.5,
+      borderBottomColor: theme.shadow,
     },
     headerTitle: {
       color: theme.color,
@@ -51,8 +54,13 @@ const Home = ({ navigation }) => {
       paddingTop: 9,
       paddingBottom: 20,
       height: 70,
-      backgroundColor: theme.background,
-      boxShadow: '0px -0.5px 0px rgba(0, 0, 0, 0.3)',
+      backgroundColor: theme.tab,
+      shadowColor: theme.shadow,
+      shadowOpacity: 0.3,
+      shadowOffset: { width: 0, height: -0.5 },
+      shadowRadius: 0,
+      borderBottomWidth: 0.5,
+      borderTopColor: theme.shadow,
     },
     tabBarItem: {
       textAlign: 'center',
@@ -68,7 +76,7 @@ const Home = ({ navigation }) => {
     <MainTab.Navigator
       initialRouteName="Posts"
       screenOptions={{
-        //   header
+        // header
         headerStyle: styles.headerBox,
         headerRightContainerStyle: { paddingRight: 16 },
         headerLeftContainerStyle: { paddingLeft: 16 },
@@ -96,7 +104,7 @@ const Home = ({ navigation }) => {
           ),
           headerLeft: () => (
             <Switch
-              trackColor={{ false: '#f4f3f4', true: '#3e3e3e' }}
+              trackColor={{ false: '#4d0000', true: '#f4f3f4' }}
               thumbColor={darkMode ? '#f5dd4b' : '#f4f3f4'}
               ios_backgroundColor="#3e3e3e"
               onValueChange={(value) => {
