@@ -90,7 +90,15 @@ const CreatePostsScreen = ({ navigation }) => {
     let {
       coords: { latitude, longitude },
     } = await Location.getCurrentPositionAsync({});
-    setPost((prevState) => ({ ...prevState, location: { latitude, longitude } }));
+    const region = await Location.reverseGeocodeAsync({ latitude, longitude });
+    // console.log('REGION', region);
+    // console.log('REGION', region[0].subregion);
+
+    setPost((prevState) => ({
+      ...prevState,
+      location: { latitude, longitude },
+      position: region[0].region || region[0].subregion,
+    }));
   };
 
   // take photo
