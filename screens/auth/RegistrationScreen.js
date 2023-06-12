@@ -35,10 +35,21 @@ const RegistrationScreen = ({ navigation }) => {
   const [focused, setFocused] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ photo: '', name: '', email: '', password: '' });
+  const [disabled, setDisabled] = useState(true);
 
   const { name, email, password, photo } = formData;
 
   const dispatch = useDispatch();
+
+  // disabled buttons to register
+  useEffect(() => {
+    if ((name, email, password)) {
+      setDisabled(false);
+    }
+    if ((!name, !email, !password)) {
+      setDisabled(true);
+    }
+  }, [name, email, password]);
 
   // change orientation
   useEffect(() => {
@@ -58,33 +69,6 @@ const RegistrationScreen = ({ navigation }) => {
   function togglePassword() {
     setShowPassword((prevState) => !prevState);
   }
-
-  // check validate email, name and password
-  const validateEmail = (str) => {
-    const emailRegex =
-      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return emailRegex.test(str);
-  };
-
-  const checkTextInput = () => {
-    if (!name.trim()) {
-      Alert.alert('Warning', 'Login is required. Please write your login');
-      return;
-    }
-
-    if (!email.trim()) {
-      Alert.alert('Warning', 'Email is required. Please write your email');
-      return;
-    }
-    if (!validateEmail(email)) {
-      Alert.alert('Warning', 'Please write valid email');
-      return;
-    }
-    if (!password.trim()) {
-      Alert.alert('Warning', 'Password is required. Please write password');
-      return;
-    }
-  };
 
   // hide keyboard
   const keyboardHide = () => {
@@ -120,7 +104,6 @@ const RegistrationScreen = ({ navigation }) => {
 
   // submit
   const handleSubmit = async () => {
-    checkTextInput();
     keyboardHide();
     setShowPassword(false);
     const imageRef = await uploadPhotoToServer(photo);
@@ -133,6 +116,7 @@ const RegistrationScreen = ({ navigation }) => {
 
     dispatch(authSignUpUser(newUser));
     setFormData({ name: '', email: '', password: '', photo: '' });
+    setDisabled(true);
   };
 
   return (
@@ -266,7 +250,12 @@ const RegistrationScreen = ({ navigation }) => {
                     <Text style={styles.showText}>{showPassword ? 'Сховати' : 'Показати'}</Text>
                   </TouchableOpacity>
                 </View>
-                <TouchableOpacity onPress={handleSubmit} activeOpacity={0.7} style={styles.btn}>
+                <TouchableOpacity
+                  onPress={handleSubmit}
+                  activeOpacity={0.7}
+                  style={styles.btn}
+                  disabled={disabled}
+                >
                   <Text style={styles.BtnText}>Увійти</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
