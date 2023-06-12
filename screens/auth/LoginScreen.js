@@ -57,26 +57,10 @@ const LoginScreen = ({ navigation }) => {
     setShowPassword((prevState) => !prevState);
   }
 
-  // check validate email, password
-  const validateEmail = (str) => {
-    const emailRegex =
-      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return emailRegex.test(str);
-  };
-
+  // check validate password
   const checkTextInput = () => {
-    if (!email.trim()) {
-      Alert.alert('Warning', 'Email is required. Please write your email');
-      return;
-    }
-
-    if (!validateEmail(email)) {
-      Alert.alert('Warning', 'Please write valid email');
-      return;
-    }
-    if (!password.trim()) {
-      Alert.alert('Warning', 'Password is required. Please write password');
-      return;
+    if (!password) {
+      return Alert.alert('Warning', 'Password is required. Please write password');
     }
   };
 
@@ -88,7 +72,6 @@ const LoginScreen = ({ navigation }) => {
 
   // submit
   const handleSubmit = () => {
-    checkTextInput();
     keyboardHide();
     setShowPassword(false);
 
