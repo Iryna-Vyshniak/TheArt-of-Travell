@@ -11,6 +11,7 @@ import {
 
 import { ThemeProvider } from './shared/theme/ThemeContext';
 import MainNavigation from './components/Main';
+import { StatusBarLine } from './components/StatusBar';
 
 export default function App() {
   let [fontsLoaded] = useFonts({
@@ -26,6 +27,7 @@ export default function App() {
   return (
     <ThemeProvider>
       <Provider store={store}>
+        <StatusBarLine />
         <MainNavigation />
       </Provider>
     </ThemeProvider>
