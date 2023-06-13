@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler';
 import { Provider } from 'react-redux';
-import { store } from './redux/store';
+import { store } from './src/redux/store';
 
 import {
   useFonts,
@@ -9,9 +9,9 @@ import {
   Roboto_700Bold,
 } from '@expo-google-fonts/roboto';
 
-import { ThemeProvider } from './shared/theme/ThemeContext';
-import MainNavigation from './components/Main';
-import { StatusBarLine } from './components/StatusBar';
+import { ThemeProvider } from './src/shared/theme/ThemeContext';
+import MainNavigation from './src/components/Main';
+import { StatusBarLine } from './src/components/StatusBar';
 
 export default function App() {
   let [fontsLoaded] = useFonts({
