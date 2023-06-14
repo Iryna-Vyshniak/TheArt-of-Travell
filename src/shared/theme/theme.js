@@ -11,10 +11,10 @@ export const theme = {
   dark: {
     theme: 'dark',
     color: '#FFFFFF',
-    background: '#000000',
+    background: '#3b0000',
     box: '#696969',
     shadow: '#FF6C00',
     tab: '#4d0000',
-    profile: '#2b1212',
+    profile: '#4d0000',
   },
 };
