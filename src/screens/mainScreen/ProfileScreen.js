@@ -57,7 +57,14 @@ const ProfileScreen = ({ route, navigation }) => {
   return (
     <SafeAreaView style={styles.mainContainer}>
       <ImageBackground source={Bg} style={styles.imageBg}>
-        <View style={{ ...styles.container, backgroundColor: theme.profile }}>
+        <View
+          style={{
+            ...styles.container,
+            backgroundColor: theme.profile,
+            borderWidth: 0.5,
+            borderColor: theme.shadow,
+          }}
+        >
           <Avatar />
           <Pressable style={styles.logoutBtn} onPress={signOut}>
             <Icon name="log-out" size={24} color="#BDBDBD" />
@@ -65,8 +72,13 @@ const ProfileScreen = ({ route, navigation }) => {
           <Text style={{ ...styles.name, color: theme.color }}>{name}</Text>
 
           {userPosts?.length === 0 && (
-            <View style={{ ...styles.emptyBox, backgroundColor: theme.profile }}>
-              <Text style={styles.noPosts}>У Вас немає постів 😌</Text>
+            <View
+              style={{
+                ...styles.emptyBox,
+                backgroundColor: theme.profile,
+              }}
+            >
+              <Text style={styles.noPosts}>У вас немає постів 😌</Text>
             </View>
           )}
 
