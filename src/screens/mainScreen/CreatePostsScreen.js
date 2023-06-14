@@ -175,6 +175,7 @@ const CreatePostsScreen = ({ navigation }) => {
       likes: [],
       userId,
       name,
+      timePublished: Date.now().toString(),
     };
 
     try {
