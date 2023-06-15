@@ -33,7 +33,7 @@ const SettingScreen = ({ navigation }) => {
             color: theme.color,
           }}
         >
-          {darkMode ? 'Switch to Light Theme' : 'Switch to Dark Theme'}
+          {darkMode ? 'Обрати світлу тему' : 'Обрати темну тему'}
         </Text>
       </TouchableOpacity>
     </View>
