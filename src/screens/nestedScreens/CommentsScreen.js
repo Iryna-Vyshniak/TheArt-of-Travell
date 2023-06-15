@@ -26,7 +26,7 @@ const CommentsScreen = ({ route }) => {
 
   const { name, userAvatar, email, userId } = useSelector((state) => state.auth);
   const { id: postId, photo, userId: postOwnerId } = route.params;
-  const { theme } = useContext(ThemeContext);
+  const { theme, darkMode } = useContext(ThemeContext);
 
   // create comment
   const createComment = async () => {
@@ -128,6 +128,13 @@ const CommentsScreen = ({ route }) => {
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
       <View style={{ ...styles.container, backgroundColor: theme.background }}>
+        {darkMode ? (
+          <Image
+            style={styles.backgroundImage}
+            source={require(`../../../assets/darkF.jpg`)}
+            blurRadius={15}
+          />
+        ) : null}
         <View style={styles.imageWrapper}>
           <Image
             style={styles.postImage}
@@ -144,7 +151,7 @@ const CommentsScreen = ({ route }) => {
           renderItem={renderItem}
         />
 
-        <View style={{ ...styles.inputContainer, backgroundColor: theme.background }}>
+        <View style={{ ...styles.inputContainer, backgroundColor: 'transparent' }}>
           <TextInput
             style={{
               ...styles.input,
@@ -278,5 +285,13 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     width: 34,
     height: 34,
+  },
+  // background
+  backgroundImage: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    flex: 1,
+    resizeMode: 'cover',
   },
 });
