@@ -7,6 +7,8 @@ export const theme = {
     shadow: '#000000',
     tab: '#FFFFFF',
     profile: '#FFFFFF',
+    icon: '#ffd700',
+    settingsBg: '#e6e6fa',
   },
   dark: {
     theme: 'dark',
@@ -16,5 +18,7 @@ export const theme = {
     shadow: '#FF6C00',
     tab: '#4d0000',
     profile: '#4d0000',
+    icon: '#FFFF00',
+    settingsBg: '#3b0000',
   },
 };
