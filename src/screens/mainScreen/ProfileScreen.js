@@ -24,7 +24,7 @@ const ProfileScreen = ({ route, navigation }) => {
   const [userPosts, setUserPosts] = useState([]);
   const { userId, name } = useSelector((state) => state.auth);
 
-  const { theme } = useContext(ThemeContext);
+  const { theme, darkMode } = useContext(ThemeContext);
 
   const getUserPosts = async () => {
     try {
@@ -65,6 +65,13 @@ const ProfileScreen = ({ route, navigation }) => {
             borderColor: theme.shadow,
           }}
         >
+          {darkMode ? (
+            <Image
+              source={require('../../../assets/darkF.jpg')}
+              style={styles.backgroundImage}
+              blurRadius={15}
+            />
+          ) : null}
           <Avatar />
           <Pressable style={styles.logoutBtn} onPress={signOut}>
             <Icon name="log-out" size={24} color="#BDBDBD" />
@@ -88,7 +95,7 @@ const ProfileScreen = ({ route, navigation }) => {
               keyExtractor={(item) => item.id}
               data={userPosts}
               renderItem={({ item }) => (
-                <View style={{ ...styles.card, backgroundColor: theme.profile }}>
+                <View style={{ ...styles.card, backgroundColor: 'transparent' }}>
                   <View style={styles.imageThumb}>
                     <Image
                       source={{
@@ -285,5 +292,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 19,
     textDecorationLine: 'underline',
+  },
+  backgroundImage: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '110%',
+    resizeMode: 'cover',
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
   },
 });
