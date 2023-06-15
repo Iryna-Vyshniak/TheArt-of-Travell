@@ -51,7 +51,7 @@ const CreatePostsScreen = ({ navigation }) => {
   const { image, title, position } = post;
   const { userId, name } = useSelector((state) => state.auth);
 
-  const { theme } = useContext(ThemeContext);
+  const { theme, darkMode } = useContext(ThemeContext);
 
   const isFocused = useIsFocused();
 
@@ -175,7 +175,7 @@ const CreatePostsScreen = ({ navigation }) => {
       likes: [],
       userId,
       name,
-      timePublished: Date.now(),
+      timePublished: +Date.now(),
     };
 
     try {
@@ -223,6 +223,13 @@ const CreatePostsScreen = ({ navigation }) => {
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
       <SafeAreaView style={{ ...styles.container, backgroundColor: theme.background }}>
+        {darkMode ? (
+          <Image
+            style={styles.backgroundImage}
+            source={require(`../../../assets/darkF.jpg`)}
+            blurRadius={15}
+          />
+        ) : null}
         <KeyboardAvoidingView behavior={Platform.OS == 'ios' ? 'padding' : 'height'}>
           <View
             style={{
@@ -469,5 +476,13 @@ const styles = StyleSheet.create({
     height: 40,
     backgroundColor: '#F6F6F6',
     borderRadius: 20,
+  },
+  // background
+  backgroundImage: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    flex: 1,
+    resizeMode: 'cover',
   },
 });
