@@ -15,6 +15,7 @@ import {
   Pressable,
   Image,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { StyleSheet } from 'react-native';
 import Bg from '../../../assets/login-bg.jpg';
@@ -34,6 +35,7 @@ const RegistrationScreen = ({ navigation }) => {
   const [keyboardStatus, setKeyboardStatus] = useState(false);
   const [focused, setFocused] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({ photo: '', name: '', email: '', password: '' });
 
   const { name, email, password, photo } = formData;
@@ -100,6 +102,7 @@ const RegistrationScreen = ({ navigation }) => {
 
   // submit
   const handleSubmit = async () => {
+    setSubmitting(true);
     checkCredentials();
     keyboardHide();
     setShowPassword(false);
@@ -110,9 +113,15 @@ const RegistrationScreen = ({ navigation }) => {
       email,
       password,
     };
-
-    dispatch(authSignUpUser(newUser));
-    setFormData({ name: '', email: '', password: '', photo: '' });
+   try {
+     await dispatch(authSignUpUser(newUser));
+     setFormData({ name: '', email: '', password: '', photo: '' });
+   } catch (error) {
+    console.log(error);
+   } finally {
+     setSubmitting(false);
+   }
+    
   };
 
   return (
@@ -166,101 +175,117 @@ const RegistrationScreen = ({ navigation }) => {
               >
                 Реєстрація
               </Text>
-              <View
-                style={{
-                  ...styles.form,
-                  width: dimensions.windowWidth,
-                  gap: isPortrait ? 16 : 8,
-                }}
-              >
-                <TextInput
-                  value={name}
-                  onChangeText={(value) =>
-                    setFormData((prevState) => ({ ...prevState, name: value }))
-                  }
-                  placeholder="Логін"
-                  placeholderTextColor="#BDBDBD"
-                  autoCapitalize="none"
-                  selectionColor={'#FF6C00'}
-                  onFocus={() => {
-                    setKeyboardStatus(true);
-                    setFocused('name');
-                  }}
-                  onBlur={() => {
-                    setFocused('');
-                  }}
+              {!submitting ? (
+                <View
                   style={{
-                    ...styles.input,
-                    borderColor: focused === 'name' ? '#FF6C00' : '#E8E8E8',
+                    ...styles.form,
+                    width: dimensions.windowWidth,
+                    gap: isPortrait ? 16 : 8,
                   }}
-                />
-                <TextInput
-                  value={email}
-                  onChangeText={(value) =>
-                    setFormData((prevState) => ({ ...prevState, email: value }))
-                  }
-                  placeholder="Адреса електронної пошти"
-                  placeholderTextColor="#BDBDBD"
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  selectionColor={'#FF6C00'}
-                  onFocus={() => {
-                    setKeyboardStatus(true);
-                    setFocused('email');
-                  }}
-                  onBlur={() => {
-                    setFocused('');
-                  }}
-                  style={{
-                    ...styles.input,
-                    borderColor: focused === 'email' ? '#FF6C00' : '#E8E8E8',
-                  }}
-                />
-                <View style={{ ...styles.passwordContainer, marginBottom: isPortrait ? 43 : 8 }}>
+                >
                   <TextInput
-                    type={showPassword ? 'text' : 'password'}
-                    value={password}
+                    value={name}
                     onChangeText={(value) =>
-                      setFormData((prevState) => ({ ...prevState, password: value }))
+                      setFormData((prevState) => ({ ...prevState, name: value }))
                     }
-                    placeholder="Пароль"
+                    placeholder="Логін"
                     placeholderTextColor="#BDBDBD"
-                    secureTextEntry={!showPassword}
                     autoCapitalize="none"
                     selectionColor={'#FF6C00'}
                     onFocus={() => {
                       setKeyboardStatus(true);
-                      setFocused('password');
+                      setFocused('name');
                     }}
                     onBlur={() => {
                       setFocused('');
                     }}
                     style={{
                       ...styles.input,
-                      borderColor: focused === 'password' ? '#FF6C00' : '#E8E8E8',
+                      borderColor: focused === 'name' ? '#FF6C00' : '#E8E8E8',
                     }}
                   />
+                  <TextInput
+                    value={email}
+                    onChangeText={(value) =>
+                      setFormData((prevState) => ({ ...prevState, email: value }))
+                    }
+                    placeholder="Адреса електронної пошти"
+                    placeholderTextColor="#BDBDBD"
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    selectionColor={'#FF6C00'}
+                    onFocus={() => {
+                      setKeyboardStatus(true);
+                      setFocused('email');
+                    }}
+                    onBlur={() => {
+                      setFocused('');
+                    }}
+                    style={{
+                      ...styles.input,
+                      borderColor: focused === 'email' ? '#FF6C00' : '#E8E8E8',
+                    }}
+                  />
+                  <View style={{ ...styles.passwordContainer, marginBottom: isPortrait ? 43 : 8 }}>
+                    <TextInput
+                      type={showPassword ? 'text' : 'password'}
+                      value={password}
+                      onChangeText={(value) =>
+                        setFormData((prevState) => ({ ...prevState, password: value }))
+                      }
+                      placeholder="Пароль"
+                      placeholderTextColor="#BDBDBD"
+                      secureTextEntry={!showPassword}
+                      autoCapitalize="none"
+                      selectionColor={'#FF6C00'}
+                      onFocus={() => {
+                        setKeyboardStatus(true);
+                        setFocused('password');
+                      }}
+                      onBlur={() => {
+                        setFocused('');
+                      }}
+                      style={{
+                        ...styles.input,
+                        borderColor: focused === 'password' ? '#FF6C00' : '#E8E8E8',
+                      }}
+                    />
+                    <TouchableOpacity
+                      onPress={togglePassword}
+                      activeOpacity={0.7}
+                      style={styles.passwordIndicator}
+                    >
+                      <Text style={styles.showText}>{showPassword ? 'Сховати' : 'Показати'}</Text>
+                    </TouchableOpacity>
+                  </View>
+                  <TouchableOpacity onPress={handleSubmit} activeOpacity={0.7} style={styles.btn}>
+                    <Text style={styles.BtnText}>Увійти</Text>
+                  </TouchableOpacity>
                   <TouchableOpacity
-                    onPress={togglePassword}
+                    onPress={() => navigation.navigate('Login')}
                     activeOpacity={0.7}
-                    style={styles.passwordIndicator}
+                    style={styles.wrapper}
                   >
-                    <Text style={styles.showText}>{showPassword ? 'Сховати' : 'Показати'}</Text>
+                    <Text style={styles.loginText}>
+                      Вже є акаунт? <Text style={styles.loginLink}>Увійти</Text>
+                    </Text>
                   </TouchableOpacity>
                 </View>
-                <TouchableOpacity onPress={handleSubmit} activeOpacity={0.7} style={styles.btn}>
-                  <Text style={styles.BtnText}>Увійти</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => navigation.navigate('Login')}
-                  activeOpacity={0.7}
-                  style={styles.wrapper}
+              ) : (
+                <View
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'flex-start',
+                    gap: 16,
+                    paddingHorizontal: 16,
+                    width: '100%',
+                    backgroundColor: 'transparent',
+                  }}
                 >
-                  <Text style={styles.loginText}>
-                    Вже є акаунт? <Text style={styles.loginLink}>Увійти</Text>
-                  </Text>
-                </TouchableOpacity>
-              </View>
+                  <ActivityIndicator size="large" color="#FF6C00" style={{ marginBottom: 350 }} />
+                </View>
+              )}
             </View>
           </KeyboardAvoidingView>
         </ImageBackground>
