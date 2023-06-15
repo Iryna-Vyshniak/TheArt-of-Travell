@@ -15,6 +15,7 @@ import CommentsScreen from '../screens/nestedScreens/CommentsScreen';
 import MapScreen from '../screens/nestedScreens/MapScreen';
 
 import { CustomBackButton } from './CustomBackButton';
+import SettingScreen from '../screens/nestedScreens/SettingScreen';
 
 const Stack = createStackNavigator();
 
@@ -49,6 +50,13 @@ const MainNavigation = () => {
     headerBox: {
       height: 73,
       backgroundColor: theme.background,
+      boxShadow: '0px -0.5px 0px rgba(0, 0, 0, 0.3)',
+      borderBottomWidth: 1,
+      borderBottomColor: '#BDBDBD',
+    },
+    headerBoxSettings: {
+      height: 73,
+      backgroundColor: theme.settingsBg,
       boxShadow: '0px -0.5px 0px rgba(0, 0, 0, 0.3)',
       borderBottomWidth: 1,
       borderBottomColor: '#BDBDBD',
@@ -93,6 +101,21 @@ const MainNavigation = () => {
         ) : (
           <>
             <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
+            <Stack.Screen
+              name="Setting"
+              component={SettingScreen}
+              options={({ navigation }) => ({
+                title: 'Налаштування',
+                headerTitleAlign: 'center',
+                headerStyle: styles.headerBoxSettings,
+                headerRightContainerStyle: { paddingRight: 16 },
+                headerLeftContainerStyle: { paddingLeft: 16 },
+                headerTitleStyle: styles.headerTitle,
+                headerTitleAlign: 'center',
+                headerLeft: () => <CustomBackButton onPress={() => navigation.goBack()} />,
+                tabBarVisible: false,
+              })}
+            />
             <Stack.Screen
               name="Comments"
               component={CommentsScreen}
