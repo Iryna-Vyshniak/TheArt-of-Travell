@@ -2,7 +2,7 @@ import { useDispatch } from 'react-redux';
 import { useContext } from 'react';
 import { EventRegister } from 'react-native-event-listeners';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { StyleSheet, Pressable, Text, Switch } from 'react-native';
+import { StyleSheet, Pressable, Text, Switch, TouchableOpacity } from 'react-native';
 // icons import
 import { Feather } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
@@ -14,6 +14,8 @@ import PostsScreen from '../nestedScreens/PostsScreen';
 import { authSignOutUser } from '../../redux/auth/authOperation';
 import { ThemeContext } from '../../shared/theme/ThemeContext';
 import { CustomBackButton } from '../../components/CustomBackButton';
+
+import { Ionicons } from '@expo/vector-icons';
 
 const MainTab = createBottomTabNavigator();
 
@@ -72,6 +74,11 @@ const Home = ({ navigation }) => {
     },
   };
 
+  // settings
+  const navToSetting = () => {
+    navigation.navigate('Setting');
+  };
+
   return (
     <MainTab.Navigator
       initialRouteName="Posts"
@@ -103,16 +110,9 @@ const Home = ({ navigation }) => {
             </Pressable>
           ),
           headerLeft: () => (
-            <Switch
-              trackColor={{ false: '#4d0000', true: '#f4f3f4' }}
-              thumbColor={darkMode ? '#f5dd4b' : '#f4f3f4'}
-              ios_backgroundColor="#3e3e3e"
-              onValueChange={(value) => {
-                setDarkMode(value);
-                EventRegister.emit('ChangeTheme', value);
-              }}
-              value={darkMode}
-            />
+            <TouchableOpacity onPress={navToSetting}>
+              <Ionicons name="settings-sharp" size={20} color={theme.color} />
+            </TouchableOpacity>
           ),
           tabBarIcon: ({ focused, color }) => (
             <Feather name="grid" size={24} color={color} focused={focused} />
