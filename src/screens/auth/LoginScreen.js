@@ -12,6 +12,7 @@ import {
   Alert,
   Platform,
   Dimensions,
+  ActivityIndicator,
 } from 'react-native';
 import { useDispatch } from 'react-redux';
 
@@ -29,6 +30,7 @@ const LoginScreen = ({ navigation }) => {
   const [keyboardStatus, setKeyboardStatus] = useState(false);
   const [focused, setFocused] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -71,12 +73,19 @@ const LoginScreen = ({ navigation }) => {
   };
 
   // submit
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    setSubmitting(true);
     keyboardHide();
     setShowPassword(false);
 
-    dispatch(authSignInUser(formData));
-    setFormData({ email: '', password: '' });
+    try {
+      await dispatch(authSignInUser(formData));
+      setFormData({ email: '', password: '' });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -95,76 +104,92 @@ const LoginScreen = ({ navigation }) => {
               }}
             >
               <Text style={styles.title}>Увійти</Text>
-              <View style={styles.form}>
-                <TextInput
-                  value={email}
-                  onChangeText={(value) =>
-                    setFormData((prevState) => ({ ...prevState, email: value }))
-                  }
-                  placeholder="Адреса електронної пошти"
-                  placeholderTextColor="#BDBDBD"
-                  keyboardType="email-address"
-                  autoCompleteType="email-address"
-                  autoCapitalize="none"
-                  selectionColor={'#FF6C00'}
-                  onFocus={() => {
-                    setKeyboardStatus(true);
-                    setFocused('email');
-                  }}
-                  onBlur={() => {
-                    setFocused('');
-                  }}
-                  style={{
-                    ...styles.input,
-                    borderColor: focused === 'email' ? '#FF6C00' : '#E8E8E8',
-                  }}
-                />
-                <View style={styles.passwordContainer}>
+              {!submitting ? (
+                <View style={styles.form}>
                   <TextInput
-                    type={showPassword ? 'text' : 'password'}
-                    value={password}
+                    value={email}
                     onChangeText={(value) =>
-                      setFormData((prevState) => ({ ...prevState, password: value }))
+                      setFormData((prevState) => ({ ...prevState, email: value }))
                     }
-                    placeholder="Пароль"
+                    placeholder="Адреса електронної пошти"
                     placeholderTextColor="#BDBDBD"
-                    secureTextEntry={!showPassword}
-                    autoCompleteType="password"
+                    keyboardType="email-address"
+                    autoCompleteType="email-address"
                     autoCapitalize="none"
                     selectionColor={'#FF6C00'}
                     onFocus={() => {
                       setKeyboardStatus(true);
-                      setFocused('password');
+                      setFocused('email');
                     }}
                     onBlur={() => {
                       setFocused('');
                     }}
                     style={{
                       ...styles.input,
-                      borderColor: focused === 'password' ? '#FF6C00' : '#E8E8E8',
+                      borderColor: focused === 'email' ? '#FF6C00' : '#E8E8E8',
                     }}
                   />
+                  <View style={styles.passwordContainer}>
+                    <TextInput
+                      type={showPassword ? 'text' : 'password'}
+                      value={password}
+                      onChangeText={(value) =>
+                        setFormData((prevState) => ({ ...prevState, password: value }))
+                      }
+                      placeholder="Пароль"
+                      placeholderTextColor="#BDBDBD"
+                      secureTextEntry={!showPassword}
+                      autoCompleteType="password"
+                      autoCapitalize="none"
+                      selectionColor={'#FF6C00'}
+                      onFocus={() => {
+                        setKeyboardStatus(true);
+                        setFocused('password');
+                      }}
+                      onBlur={() => {
+                        setFocused('');
+                      }}
+                      style={{
+                        ...styles.input,
+                        borderColor: focused === 'password' ? '#FF6C00' : '#E8E8E8',
+                      }}
+                    />
+                    <TouchableOpacity
+                      onPress={togglePassword}
+                      activeOpacity={0.7}
+                      style={styles.passwordIndicator}
+                    >
+                      <Text style={styles.showText}>{showPassword ? 'Сховати' : 'Показати'}</Text>
+                    </TouchableOpacity>
+                  </View>
+                  <TouchableOpacity onPress={handleSubmit} style={styles.btn}>
+                    <Text style={styles.BtnText}>Увійти</Text>
+                  </TouchableOpacity>
                   <TouchableOpacity
-                    onPress={togglePassword}
+                    onPress={() => navigation.navigate('Register')}
                     activeOpacity={0.7}
-                    style={styles.passwordIndicator}
+                    style={styles.wrapper}
                   >
-                    <Text style={styles.showText}>{showPassword ? 'Сховати' : 'Показати'}</Text>
+                    <Text style={styles.loginText}>
+                      Немає акаунту? <Text style={styles.loginLink}>Зареєструватися</Text>
+                    </Text>
                   </TouchableOpacity>
                 </View>
-                <TouchableOpacity onPress={handleSubmit} style={styles.btn}>
-                  <Text style={styles.BtnText}>Увійти</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => navigation.navigate('Register')}
-                  activeOpacity={0.7}
-                  style={styles.wrapper}
+              ) : (
+                <View
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'flex-start',
+                    gap: 16,
+                    paddingHorizontal: 16,
+                    width: '100%',
+                    backgroundColor: 'transparent',
+                  }}
                 >
-                  <Text style={styles.loginText}>
-                    Немає акаунту? <Text style={styles.loginLink}>Зареєструватися</Text>
-                  </Text>
-                </TouchableOpacity>
-              </View>
+                  <ActivityIndicator size="large" color="#FF6C00" style={{ marginBottom: 350 }} />
+                </View>
+              )}
             </View>
           </KeyboardAvoidingView>
         </ImageBackground>
