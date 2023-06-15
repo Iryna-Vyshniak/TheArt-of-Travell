@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import Icon from '@expo/vector-icons/Feather';
 import { useContext, useEffect, useState } from 'react';
-import { collection, doc, onSnapshot, query, setDoc } from 'firebase/firestore';
+import { collection, doc, onSnapshot, orderBy, query, setDoc } from 'firebase/firestore';
 import { db } from '../../firebase/config';
 import { useSelector } from 'react-redux';
 import { ThemeContext } from '../../shared/theme/ThemeContext';
@@ -24,22 +24,20 @@ const PostsScreen = ({ route, navigation }) => {
   const [error, setError] = useState(false);
 
   const { name, email, userAvatar, userId } = useSelector((state) => state.auth);
-  const { theme } = useContext(ThemeContext);
+  const { theme, darkMode } = useContext(ThemeContext);
 
-  // get all posts from server
+  // get all posts from server and ordered by desc
   const getAllPosts = async () => {
     try {
       setIsLoading(true);
       setError(false);
-      const postsRef = query(collection(db, 'posts'));
-      onSnapshot(postsRef, (snapshot) => {
-        const allPosts = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
-        const sortedPosts = [...allPosts].sort((a, b) => {
-          const dateA = a.timePublished;
-          const dateB = b.timePublished;
-          return dateB - dateA;
-        });
-        return setUserPosts(sortedPosts);
+
+      const postsRef = collection(db, 'posts');
+      const sortedPostsQuery = query(postsRef, orderBy('timePublished', 'desc'));
+
+      onSnapshot(sortedPostsQuery, (snapshot) => {
+        const sortedPosts = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+        setUserPosts(sortedPosts);
       });
     } catch (error) {
       console.log(error);
@@ -74,6 +72,13 @@ const PostsScreen = ({ route, navigation }) => {
 
   return (
     <SafeAreaView style={{ ...styles.container, backgroundColor: theme.background }}>
+      {darkMode ? (
+        <Image
+          style={styles.backgroundImage}
+          source={require(`../../../assets/darkF.jpg`)}
+          blurRadius={15}
+        />
+      ) : null}
       <Pressable
         onPress={() => navigation.navigate('Profile', { screen: 'ProfileScreen' })}
         style={styles.userInfo}
@@ -269,5 +274,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 19,
     textDecorationLine: 'underline',
+  },
+  backgroundImage: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    flex: 1,
+    resizeMode: 'cover',
   },
 });
