@@ -79,12 +79,7 @@ const ProfileScreen = ({ route, navigation }) => {
           <Text style={{ ...styles.name, color: theme.color }}>{name}</Text>
 
           {userPosts?.length === 0 && (
-            <View
-              style={{
-                ...styles.emptyBox,
-                backgroundColor: theme.profile,
-              }}
-            >
+            <View style={styles.emptyBox}>
               <Text style={styles.noPosts}>У вас немає постів 😌</Text>
             </View>
           )}
