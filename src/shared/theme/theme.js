@@ -19,6 +19,6 @@ export const theme = {
     tab: '#4d0000',
     profile: '#4d0000',
     icon: '#FFFF00',
-    settingsBg: '#3b0000',
+    settingsBg: '#4c0000',
   },
 };
